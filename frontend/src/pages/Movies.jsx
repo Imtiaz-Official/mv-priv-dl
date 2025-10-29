@@ -156,12 +156,28 @@ const Movies = () => {
     const searchParams = new URLSearchParams(location.search);
     const searchFromUrl = searchParams.get('search');
     const typeFromUrl = searchParams.get('type');
+    const genreFromUrl = searchParams.get('genre');
+    const qualityFromUrl = searchParams.get('quality');
     
     if (searchFromUrl) {
       setSearchQuery(searchFromUrl);
     }
     if (typeFromUrl && ['movies', 'tv', 'anime'].includes(typeFromUrl)) {
       setContentType(typeFromUrl);
+    }
+    if (genreFromUrl) {
+      setFilters(prev => ({ ...prev, genre: genreFromUrl.charAt(0).toUpperCase() + genreFromUrl.slice(1) }));
+    }
+    if (qualityFromUrl) {
+      // Map quality URL parameters to filter values
+      const qualityMap = {
+        '720p': 'HD',
+        '1080p': 'HD',
+        '4k': '4K',
+        'bluray': 'HD'
+      };
+      const mappedQuality = qualityMap[qualityFromUrl.toLowerCase()] || qualityFromUrl.toUpperCase();
+      setFilters(prev => ({ ...prev, quality: mappedQuality }));
     }
   }, [location.search]);
 

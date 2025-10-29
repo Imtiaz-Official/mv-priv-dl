@@ -26,6 +26,8 @@ import {
   TextField,
   Divider,
   Badge,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -40,91 +42,91 @@ import {
   Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-
-// Mock user data
-const mockUser = {
-  id: 1,
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: '/placeholder-avatar.svg',
-  joinDate: '2023-01-15',
-  totalDownloads: 156,
-  favoriteGenres: ['Action', 'Sci-Fi', 'Thriller'],
-  downloadHistory: [
-    {
-      id: 1,
-      movieId: 1,
-      title: 'The Dark Knight',
-      poster: '/placeholder-movie.svg',
-      quality: '1080p',
-      format: 'MP4',
-      size: '2.1 GB',
-      downloadDate: '2024-01-15',
-      status: 'completed',
-      progress: 100,
-    },
-    {
-      id: 2,
-      movieId: 2,
-      title: 'Inception',
-      poster: '/placeholder-movie.svg',
-      quality: '720p',
-      format: 'MKV',
-      size: '1.8 GB',
-      downloadDate: '2024-01-14',
-      status: 'completed',
-      progress: 100,
-    },
-    {
-      id: 3,
-      movieId: 3,
-      title: 'Interstellar',
-      poster: '/placeholder-movie.svg',
-      quality: '4K',
-      format: 'MP4',
-      size: '8.2 GB',
-      downloadDate: '2024-01-13',
-      status: 'downloading',
-      progress: 65,
-    },
-  ],
-  recommendations: [
-    {
-      id: 4,
-      title: 'Tenet',
-      poster: '/placeholder-movie.svg',
-      genre: 'Sci-Fi',
-      rating: 7.3,
-      reason: 'Based on your interest in Christopher Nolan films',
-    },
-    {
-      id: 5,
-      title: 'Mad Max: Fury Road',
-      poster: '/placeholder-movie.svg',
-      genre: 'Action',
-      rating: 8.1,
-      reason: 'Popular among Action movie fans',
-    },
-    {
-      id: 6,
-      title: 'Blade Runner 2049',
-      poster: '/placeholder-movie.svg',
-      genre: 'Sci-Fi',
-      rating: 8.0,
-      reason: 'Recommended for Sci-Fi enthusiasts',
-    },
-  ],
-};
+import { useAuth } from '../hooks/useAuth';
 
 const Profile = () => {
-  const [user, setUser] = useState(mockUser);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState(null);
+  const [downloadHistory, setDownloadHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: user.name,
-    email: user.email,
+    name: '',
+    email: '',
   });
-  const navigate = useNavigate();
+  const [recommendations, setRecommendations] = useState([]);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        
+        // Fetch user profile
+        const profileResponse = await fetch(`http://localhost:5000/api/users/${user?.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          if (profileData.success) {
+            setUserProfile(profileData.data);
+            setEditForm({
+              name: profileData.data.name || profileData.data.username,
+              email: profileData.data.email,
+            });
+          }
+        }
+
+        // Fetch download history
+        const historyResponse = await fetch(`http://localhost:5000/api/users/${user?.id}/downloads`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          if (historyData.success) {
+            setDownloadHistory(historyData.data || []);
+          }
+        }
+
+        // Fetch recommendations
+        const recResponse = await fetch('http://localhost:5000/api/movies/recommendations', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (recResponse.ok) {
+          const recData = await recResponse.json();
+          if (recData.success) {
+            setRecommendations(recData.data || []);
+          }
+        }
+
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        setError('Failed to load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.id) {
+      fetchUserProfile();
+    }
+  }, [user?.id]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -132,14 +134,14 @@ const Profile = () => {
 
   const handleEditProfile = () => {
     setEditForm({
-      name: user.name,
-      email: user.email,
+      name: userProfile?.name || userProfile?.username || '',
+      email: userProfile?.email || '',
     });
     setEditDialogOpen(true);
   };
 
   const handleSaveProfile = () => {
-    setUser(prev => ({
+    setUserProfile(prev => ({
       ...prev,
       name: editForm.name,
       email: editForm.email,
@@ -168,6 +170,24 @@ const Profile = () => {
     </div>
   );
 
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Profile Header */}
@@ -182,7 +202,7 @@ const Profile = () => {
         <Grid container spacing={3} alignItems="center">
           <Grid item>
             <Avatar
-              src={user.avatar}
+              src={userProfile?.avatar}
               sx={{
                 width: 120,
                 height: 120,
@@ -195,19 +215,19 @@ const Profile = () => {
           <Grid item xs>
             <Box display="flex" alignItems="center" gap={2} mb={1}>
               <Typography variant="h4" fontWeight="bold">
-                {user.name}
+                {userProfile?.name || userProfile?.username || 'User'}
               </Typography>
               <IconButton onClick={handleEditProfile} size="small">
                 <EditIcon />
               </IconButton>
             </Box>
             <Typography variant="body1" color="text.secondary" mb={2}>
-              {user.email}
+              {userProfile?.email}
             </Typography>
             <Box display="flex" gap={3} mb={2}>
               <Box textAlign="center">
                 <Typography variant="h6" color="primary">
-                  {user.totalDownloads}
+                  {downloadHistory?.length || 0}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Total Downloads
@@ -215,7 +235,7 @@ const Profile = () => {
               </Box>
               <Box textAlign="center">
                 <Typography variant="h6" color="primary">
-                  {user.downloadHistory.length}
+                  {downloadHistory?.length || 0}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Recent Downloads
@@ -223,7 +243,7 @@ const Profile = () => {
               </Box>
               <Box textAlign="center">
                 <Typography variant="h6" color="primary">
-                  {new Date(user.joinDate).getFullYear()}
+                  {userProfile?.createdAt ? new Date(userProfile.createdAt).getFullYear() : new Date().getFullYear()}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Member Since
@@ -231,7 +251,7 @@ const Profile = () => {
               </Box>
             </Box>
             <Box display="flex" gap={1} flexWrap="wrap">
-              {user.favoriteGenres.map((genre) => (
+              {userProfile?.favoriteGenres?.map((genre) => (
                 <Chip
                   key={genre}
                   label={genre}
@@ -239,7 +259,11 @@ const Profile = () => {
                   color="primary"
                   variant="outlined"
                 />
-              ))}
+              )) || (
+                <Typography variant="body2" color="text.secondary">
+                  No favorite genres set
+                </Typography>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -280,7 +304,7 @@ const Profile = () => {
       {/* Download History Tab */}
       <TabPanel value={activeTab} index={0}>
         <Grid container spacing={3}>
-          {user.downloadHistory.map((download) => (
+          {downloadHistory.map((download) => (
             <Grid item xs={12} key={download.id}>
               <Card
                 sx={{
@@ -373,7 +397,7 @@ const Profile = () => {
           Recommended for You
         </Typography>
         <Grid container spacing={3}>
-          {user.recommendations.map((movie) => (
+          {recommendations.map((movie) => (
             <Grid item xs={12} sm={6} md={4} key={movie.id}>
               <Card
                 sx={{

@@ -53,70 +53,33 @@ const Blog = () => {
   const theme = useTheme();
 
   useEffect(() => {
-    // Mock blog posts data
-    const mockPosts = [
-      {
-        id: 1,
-        title: 'Top 10 Movies to Watch This Weekend',
-        excerpt: 'Discover the best movies currently trending and perfect for your weekend binge-watching session.',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-        image: '/placeholder-blog.svg',
-        author: {
-          name: 'John Smith',
-          avatar: '/placeholder-avatar.svg',
-        },
-        publishDate: '2024-01-15',
-        views: 1250,
-        comments: 23,
-        tags: ['Movies', 'Weekend', 'Entertainment'],
-        readTime: 5,
-      },
-      {
-        id: 2,
-        title: 'The Evolution of Superhero Movies',
-        excerpt: 'From comic books to blockbuster films, explore how superhero movies have transformed cinema.',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-        image: '/placeholder-blog.svg',
-        author: {
-          name: 'Sarah Johnson',
-          avatar: '/placeholder-avatar.svg',
-        },
-        publishDate: '2024-01-12',
-        views: 2100,
-        comments: 45,
-        tags: ['Superhero', 'Cinema', 'Analysis'],
-        readTime: 8,
-      },
-      {
-        id: 3,
-        title: 'Behind the Scenes: Movie Production Secrets',
-        excerpt: 'Get an exclusive look at what happens behind the camera during major film productions.',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-        image: '/placeholder-blog.svg',
-        author: {
-          name: 'Mike Davis',
-          avatar: '/placeholder-avatar.svg',
-        },
-        publishDate: '2024-01-10',
-        views: 890,
-        comments: 12,
-        tags: ['Production', 'Behind the Scenes', 'Filmmaking'],
-        readTime: 6,
-      },
-    ];
+    const fetchBlogPosts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/posts', {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-    // Generate more mock posts
-    const allPosts = Array.from({ length: 20 }, (_, index) => ({
-      ...mockPosts[index % 3],
-      id: index + 1,
-      title: `${mockPosts[index % 3].title} ${index + 1}`,
-      publishDate: new Date(2024, 0, 15 - index).toISOString().split('T')[0],
-    }));
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setPosts(data.data.posts || []);
+          }
+        } else {
+          // Set empty array if API fails
+          setPosts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setTimeout(() => {
-      setPosts(allPosts);
-      setLoading(false);
-    }, 1000);
+    fetchBlogPosts();
   }, []);
 
   const filteredPosts = posts.filter(post =>

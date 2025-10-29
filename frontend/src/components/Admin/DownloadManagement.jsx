@@ -119,33 +119,8 @@ const DownloadManagement = () => {
           setDownloads(data.data.downloads || []);
         }
       } else {
-        // Mock data for development
-        setDownloads([
-          {
-            id: 1,
-            movieId: '6901814e33edf1aa6d059449',
-            movieTitle: 'Avengers: Endgame',
-            quality: '1080p',
-            format: 'MP4',
-            size: '2.5 GB',
-            downloadUrl: 'https://example.com/download/1',
-            isActive: true,
-            downloadCount: 15420,
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: 2,
-            movieId: '6901814e33edf1aa6d059450',
-            movieTitle: 'Spider-Man: No Way Home',
-            quality: '720p',
-            format: 'MP4',
-            size: '1.8 GB',
-            downloadUrl: 'https://example.com/download/2',
-            isActive: true,
-            downloadCount: 12350,
-            createdAt: new Date().toISOString(),
-          },
-        ]);
+        // Set empty array if API fails
+        setDownloads([]);
       }
     } catch (error) {
       console.error('Error fetching downloads:', error);
@@ -168,12 +143,8 @@ const DownloadManagement = () => {
           setMovies(data.data.movies || []);
         }
       } else {
-        // Mock data for development
-        setMovies([
-          { id: '6901814e33edf1aa6d059449', title: 'Avengers: Endgame' },
-          { id: '6901814e33edf1aa6d059450', title: 'Spider-Man: No Way Home' },
-          { id: '6901814e33edf1aa6d059451', title: 'The Batman' },
-        ]);
+        // Set empty array if API fails
+        setMovies([]);
       }
     } catch (error) {
       console.error('Error fetching movies:', error);

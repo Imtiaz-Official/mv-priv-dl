@@ -118,62 +118,13 @@ const ContentModeration = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // Mock data for demonstration
-  const mockReports = [
-    {
-      id: 1,
-      type: 'movie',
-      contentId: 'movie_123',
-      contentTitle: 'Inappropriate Movie Title',
-      reportedBy: { id: 'user_1', username: 'user123', avatar: '/avatars/user1.jpg' },
-      reason: 'Inappropriate content',
-      description: 'This movie contains explicit content that violates community guidelines.',
-      status: 'pending',
-      priority: 'high',
-      createdAt: new Date('2024-01-15T10:30:00Z'),
-      moderatedBy: null,
-      moderatedAt: null,
-      category: 'content_violation',
-    },
-    {
-      id: 2,
-      type: 'comment',
-      contentId: 'comment_456',
-      contentTitle: 'Offensive comment on "Action Movie"',
-      reportedBy: { id: 'user_2', username: 'moderator1', avatar: '/avatars/user2.jpg' },
-      reason: 'Hate speech',
-      description: 'User posted hate speech in the comments section.',
-      status: 'approved',
-      priority: 'medium',
-      createdAt: new Date('2024-01-14T15:45:00Z'),
-      moderatedBy: { id: 'admin_1', username: 'admin' },
-      moderatedAt: new Date('2024-01-14T16:00:00Z'),
-      category: 'harassment',
-    },
-    {
-      id: 3,
-      type: 'user',
-      contentId: 'user_789',
-      contentTitle: 'Spam user account',
-      reportedBy: { id: 'user_3', username: 'reporter2', avatar: '/avatars/user3.jpg' },
-      reason: 'Spam',
-      description: 'User is posting spam content across multiple movies.',
-      status: 'rejected',
-      priority: 'low',
-      createdAt: new Date('2024-01-13T09:20:00Z'),
-      moderatedBy: { id: 'mod_1', username: 'moderator' },
-      moderatedAt: new Date('2024-01-13T10:15:00Z'),
-      category: 'spam',
-    },
-  ];
-
   const [stats, setStats] = useState({
-    totalReports: 156,
-    pendingReports: 23,
-    approvedReports: 98,
-    rejectedReports: 35,
-    highPriorityReports: 8,
-    todayReports: 12,
+    totalReports: 0,
+    pendingReports: 0,
+    approvedReports: 0,
+    rejectedReports: 0,
+    highPriorityReports: 0,
+    todayReports: 0,
   });
 
   // Fetch reports from backend
