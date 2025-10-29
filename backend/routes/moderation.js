@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticate, requireModerator } = require('../middleware/auth');
-const { Movie, Post, User } = require('../models');
+const { Movie, Post, User, Report } = require('../models');
 
 const router = express.Router();
 
@@ -112,25 +112,63 @@ router.get('/reports', authenticate, requireModerator, async (req, res) => {
 // @access  Private (Moderator/Admin)
 router.get('/stats', authenticate, requireModerator, async (req, res) => {
   try {
-    // Mock statistics - in a real app, you'd calculate these from your database
+    // Get real statistics from the database
+    const totalReports = await Report.countDocuments();
+    const pendingReports = await Report.countDocuments({ status: 'pending' });
+    const underReviewReports = await Report.countDocuments({ status: 'under_review' });
+    const approvedReports = await Report.countDocuments({ status: 'approved' });
+    const rejectedReports = await Report.countDocuments({ status: 'rejected' });
+    const resolvedReports = await Report.countDocuments({ status: 'resolved' });
+    const highPriorityReports = await Report.countDocuments({ priority: 'high' });
+    const mediumPriorityReports = await Report.countDocuments({ priority: 'medium' });
+    const lowPriorityReports = await Report.countDocuments({ priority: 'low' });
+    
+    // Get reports from today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const todayReports = await Report.countDocuments({
+      createdAt: { $gte: today, $lt: tomorrow }
+    });
+    
+    // Get reports from this week
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const reportsThisWeek = await Report.countDocuments({
+      createdAt: { $gte: weekAgo }
+    });
+    
+    // Get reports from this month
+    const monthAgo = new Date();
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+    const reportsThisMonth = await Report.countDocuments({
+      createdAt: { $gte: monthAgo }
+    });
+    
+    // Get top report reasons
+    const topReportReasons = await Report.aggregate([
+      { $group: { _id: '$reason', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      { $project: { reason: '$_id', count: 1, _id: 0 } }
+    ]);
+
     const stats = {
-      totalReports: 156,
-      pendingReports: 23,
-      underReviewReports: 12,
-      resolvedReports: 121,
-      highPriorityReports: 8,
-      mediumPriorityReports: 15,
-      lowPriorityReports: 133,
-      reportsThisWeek: 18,
-      reportsThisMonth: 67,
-      averageResolutionTime: '2.5 hours',
-      topReportReasons: [
-        { reason: 'Spam content', count: 45 },
-        { reason: 'Inappropriate content', count: 38 },
-        { reason: 'Copyright violation', count: 28 },
-        { reason: 'Suspicious behavior', count: 22 },
-        { reason: 'Fake reviews', count: 15 }
-      ]
+      totalReports,
+      pendingReports,
+      underReviewReports,
+      resolvedReports,
+      approvedReports,
+      rejectedReports,
+      highPriorityReports,
+      mediumPriorityReports,
+      lowPriorityReports,
+      todayReports,
+      reportsThisWeek,
+      reportsThisMonth,
+      averageResolutionTime: '0 hours', // Will calculate this when we have resolved reports
+      topReportReasons
     };
 
     res.json({
@@ -138,6 +176,7 @@ router.get('/stats', authenticate, requireModerator, async (req, res) => {
       data: stats
     });
   } catch (error) {
+    console.error('Error fetching moderation statistics:', error);
     res.status(500).json({
       success: false,
       message: 'Server error fetching moderation statistics'
