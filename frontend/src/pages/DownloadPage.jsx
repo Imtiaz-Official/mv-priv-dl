@@ -171,6 +171,15 @@ const DownloadPage = () => {
       try {
         setLoading(true);
         
+        // Fetch download timer setting
+        const timerResponse = await fetch('http://localhost:5000/api/system/download-timer');
+        if (timerResponse.ok) {
+          const timerData = await timerResponse.json();
+          if (timerData.success) {
+            setCountdown(timerData.data.downloadTimer);
+          }
+        }
+        
         // Fetch movie details
         const movieResponse = await fetch(`http://localhost:5000/api/movies/${id}`);
         if (movieResponse.ok) {

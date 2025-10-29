@@ -17,7 +17,7 @@ router.get('/', validatePagination, validateSearch, async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Build filter object
-    const filter = { status: 'published' };
+    const filter = { status: 'published', isActive: true };
 
     // Search by title or description
     if (req.query.q) {
@@ -107,6 +107,7 @@ router.get('/featured', async (req, res) => {
   try {
     const movies = await Movie.find({
       status: 'published',
+      isActive: true,
       featured: true
     })
       .sort({ createdAt: -1 })
@@ -133,6 +134,7 @@ router.get('/trending', async (req, res) => {
   try {
     const movies = await Movie.find({
       status: 'published',
+      isActive: true,
       trending: true
     })
       .sort({ views: -1 })
@@ -159,7 +161,7 @@ router.get('/latest', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 12;
 
-    const movies = await Movie.find({ status: 'published' })
+    const movies = await Movie.find({ status: 'published', isActive: true })
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate('createdBy', 'username')
@@ -183,13 +185,15 @@ router.get('/latest', async (req, res) => {
 router.get('/platform-stats', async (req, res) => {
   try {
     // Get platform statistics
-    const totalMovies = await Movie.countDocuments({ status: 'published' });
+    const totalMovies = await Movie.countDocuments({ status: 'published', isActive: true });
     const totalTvShows = await Movie.countDocuments({ 
       status: 'published', 
+      isActive: true,
       type: { $in: ['tv', 'series'] } 
     });
     const totalAnime = await Movie.countDocuments({ 
       status: 'published', 
+      isActive: true,
       genre: { $in: ['Animation', 'Anime'] } 
     });
 
@@ -228,9 +232,9 @@ router.get('/platform-stats', async (req, res) => {
 // @access  Private (Moderator+)
 router.get('/stats', authenticate, requireModerator, async (req, res) => {
   try {
-    const totalMovies = await Movie.countDocuments({ status: 'published' });
-    const featuredMovies = await Movie.countDocuments({ status: 'published', featured: true });
-    const trendingMovies = await Movie.countDocuments({ status: 'published', trending: true });
+    const totalMovies = await Movie.countDocuments({ status: 'published', isActive: true });
+    const featuredMovies = await Movie.countDocuments({ status: 'published', isActive: true, featured: true });
+    const trendingMovies = await Movie.countDocuments({ status: 'published', isActive: true, trending: true });
     const draftMovies = await Movie.countDocuments({ status: 'draft' });
 
     res.json({
@@ -255,24 +259,24 @@ router.get('/stats', authenticate, requireModerator, async (req, res) => {
 // @access  Private (Moderator+)
 router.get('/stats/overview', authenticate, requireModerator, async (req, res) => {
   try {
-    const totalMovies = await Movie.countDocuments({ status: 'published' });
-    const featuredMovies = await Movie.countDocuments({ status: 'published', featured: true });
-    const trendingMovies = await Movie.countDocuments({ status: 'published', trending: true });
+    const totalMovies = await Movie.countDocuments({ status: 'published', isActive: true });
+    const featuredMovies = await Movie.countDocuments({ status: 'published', isActive: true, featured: true });
+    const trendingMovies = await Movie.countDocuments({ status: 'published', isActive: true, trending: true });
     
     const topGenres = await Movie.aggregate([
-      { $match: { status: 'published' } },
+      { $match: { status: 'published', isActive: true } },
       { $unwind: '$genres' },
       { $group: { _id: '$genres', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 }
     ]);
 
-    const topRatedMovies = await Movie.find({ status: 'published' })
+    const topRatedMovies = await Movie.find({ status: 'published', isActive: true })
       .sort({ 'rating.average': -1 })
       .limit(5)
       .select('title rating poster slug');
 
-    const mostViewedMovies = await Movie.find({ status: 'published' })
+    const mostViewedMovies = await Movie.find({ status: 'published', isActive: true })
       .sort({ views: -1 })
       .limit(5)
       .select('title views poster slug');
@@ -307,11 +311,12 @@ router.get('/stats/trends', authenticate, requireModerator, async (req, res) => 
 
     const recentMovies = await Movie.countDocuments({
       status: 'published',
+      isActive: true,
       createdAt: { $gte: thirtyDaysAgo }
     });
 
     const totalViews = await Movie.aggregate([
-      { $match: { status: 'published' } },
+      { $match: { status: 'published', isActive: true } },
       { $group: { _id: null, totalViews: { $sum: '$views' } } }
     ]);
 
@@ -388,7 +393,8 @@ router.get('/:identifier', optionalAuth, trackMovieView, async (req, res) => {
     
     const movie = await Movie.findOne({
       ...query,
-      status: 'published'
+      status: 'published',
+      isActive: true
     })
       .populate('createdBy', 'username avatar')
       .select('-__v');
@@ -407,7 +413,8 @@ router.get('/:identifier', optionalAuth, trackMovieView, async (req, res) => {
     const relatedMovies = await Movie.find({
       _id: { $ne: movie._id },
       genres: { $in: movie.genres },
-      status: 'published'
+      status: 'published',
+      isActive: true
     })
       .limit(6)
       .select('title poster slug rating releaseYear')
@@ -659,7 +666,8 @@ router.get('/related/:id', validateObjectId('id'), async (req, res) => {
     const relatedMovies = await Movie.find({
       _id: { $ne: movie._id },
       genres: { $in: movie.genres },
-      status: 'published'
+      status: 'published',
+      isActive: true
     })
       .limit(6)
       .select('title poster slug rating releaseYear duration views quality genres')
@@ -793,12 +801,12 @@ router.get('/stats/trends', authenticate, requireModerator, async (req, res) => 
 // @access  Private (Moderator+)
 router.get('/stats/top', authenticate, requireModerator, async (req, res) => {
   try {
-    const topRatedMovies = await Movie.find({ status: 'published' })
+    const topRatedMovies = await Movie.find({ status: 'published', isActive: true })
       .sort({ 'rating.average': -1 })
       .limit(10)
       .select('title rating poster slug views');
 
-    const mostViewedMovies = await Movie.find({ status: 'published' })
+    const mostViewedMovies = await Movie.find({ status: 'published', isActive: true })
       .sort({ views: -1 })
       .limit(10)
       .select('title views poster slug rating');
@@ -823,7 +831,7 @@ router.get('/stats/top', authenticate, requireModerator, async (req, res) => {
 // @access  Private (Moderator+)
 router.get('/stats/activity', authenticate, requireModerator, async (req, res) => {
   try {
-    const recentMovies = await Movie.find({ status: 'published' })
+    const recentMovies = await Movie.find({ status: 'published', isActive: true })
       .sort({ createdAt: -1 })
       .limit(10)
       .populate('createdBy', 'username')

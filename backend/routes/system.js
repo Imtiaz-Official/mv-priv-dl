@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate, requireAdmin } = require('../middleware/auth');
+const { Settings } = require('../models');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
@@ -11,33 +12,8 @@ const { promisify } = require('util');
 // @access  Private/Admin
 router.get('/settings', authenticate, requireAdmin, async (req, res) => {
   try {
-    // Return default system settings (in a real app, these would be stored in DB)
-    const settings = {
-      security: {
-        enableTwoFactor: false,
-        sessionTimeout: 30,
-        maxLoginAttempts: 5,
-        passwordMinLength: 8
-      },
-      performance: {
-        cacheEnabled: true,
-        maxFileSize: 100,
-        compressionEnabled: true,
-        cdnEnabled: false
-      },
-      content: {
-        autoApproveContent: false,
-        maxMoviesPerPage: 20,
-        enableComments: true,
-        enableRatings: true,
-        enableDownloads: true
-      },
-      backup: {
-        autoBackup: false,
-        backupFrequency: 'daily',
-        backupRetention: 30
-      }
-    };
+    // Get settings from database
+    const settings = await Settings.getSettings();
 
     res.json({
       success: true,
@@ -59,13 +35,13 @@ router.put('/settings', authenticate, requireAdmin, async (req, res) => {
   try {
     const { settings } = req.body;
     
-    // In a real app, you would save these to the database
-    // For now, we'll just return success
+    // Update settings in database
+    const updatedSettings = await Settings.updateSettings(settings);
     
     res.json({
       success: true,
       message: 'System settings updated successfully',
-      data: { settings }
+      data: { settings: updatedSettings }
     });
   } catch (error) {
     console.error('Error updating system settings:', error);
@@ -243,6 +219,28 @@ router.delete('/backup/:id', authenticate, requireAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting backup: ' + error.message
+    });
+  }
+});
+
+// @desc    Get download timer setting
+// @route   GET /api/system/download-timer
+// @access  Public
+router.get('/download-timer', async (req, res) => {
+  try {
+    // Get settings from database
+    const settings = await Settings.getSettings();
+    const downloadTimer = settings.content.downloadTimer;
+    
+    res.json({
+      success: true,
+      data: { downloadTimer }
+    });
+  } catch (error) {
+    console.error('Error fetching download timer:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching download timer'
     });
   }
 });

@@ -117,6 +117,10 @@ const movieSchema = new mongoose.Schema({
     enum: ['draft', 'published', 'archived'],
     default: 'published'
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   featured: {
     type: Boolean,
     default: false

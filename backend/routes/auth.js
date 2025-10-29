@@ -428,13 +428,15 @@ router.get('/dashboard', authenticate, async (req, res) => {
     }
 
     // Get platform statistics
-    const totalMovies = await Movie.countDocuments({ status: 'published' });
+    const totalMovies = await Movie.countDocuments({ status: 'published', isActive: true });
     const totalTvShows = await Movie.countDocuments({ 
       status: 'published', 
+      isActive: true,
       type: { $in: ['tv', 'series'] } 
     });
     const totalAnime = await Movie.countDocuments({ 
       status: 'published', 
+      isActive: true,
       genre: { $in: ['Animation', 'Anime'] } 
     });
 

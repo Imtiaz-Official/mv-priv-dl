@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -80,6 +80,7 @@ const SystemSettings = () => {
       enableComments: true,
       enableRatings: true,
       enableDownloads: true,
+      downloadTimer: 15,
     },
     
     // Notification Settings
@@ -149,7 +150,7 @@ const SystemSettings = () => {
     });
   };
 
-  const handleSettingChange = (category, setting, value) => {
+  const handleSettingChange = useCallback((category, setting, value) => {
     console.log(`Setting change: ${category}.${setting} = ${value}`);
     setSettings(prev => {
       const newSettings = {
@@ -162,29 +163,88 @@ const SystemSettings = () => {
       console.log('New settings state:', newSettings);
       return newSettings;
     });
+  }, []);
+
+  // Create refs for number inputs to manage cursor position
+  const inputRefs = useRef({});
+  
+  const getInputRef = (category, setting) => {
+    const key = `${category}.${setting}`;
+    if (!inputRefs.current[key]) {
+      inputRefs.current[key] = React.createRef();
+    }
+    return inputRefs.current[key];
   };
+
+  const handleNumberChange = useCallback((category, setting) => {
+    return (e) => {
+      const value = e.target.value;
+      const cursorPosition = e.target.selectionStart;
+      
+      console.log(`Number input change: ${category}.${setting}, value: "${value}", cursor: ${cursorPosition}`);
+      
+      // Store cursor position for restoration
+      const inputKey = `${category}.${setting}`;
+      const inputRef = inputRefs.current[inputKey];
+      
+      // Allow empty string for better UX while typing
+      if (value === '') {
+        handleSettingChange(category, setting, '');
+        // Restore focus and cursor position after React re-render
+        requestAnimationFrame(() => {
+          if (inputRef && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+          }
+        });
+        return;
+      }
+      
+      // Allow partial numbers while typing (e.g., "1", "12", etc.)
+      if (/^\d+$/.test(value)) {
+        const numValue = parseInt(value, 10);
+        handleSettingChange(category, setting, numValue);
+        // Restore focus and cursor position after React re-render
+        requestAnimationFrame(() => {
+          if (inputRef && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+          }
+        });
+      }
+    };
+  }, [handleSettingChange]);
 
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      console.log('Token from localStorage:', token ? 'Token exists' : 'No token found');
+      
       const response = await fetch('http://localhost:5000/api/system/settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify({ settings }),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error('Failed to save settings');
+        const errorData = await response.json();
+        console.error('Server error response:', errorData);
+        throw new Error(errorData.message || 'Failed to save settings');
       }
 
+      const result = await response.json();
+      console.log('Success response:', result);
       showSnackbar('Settings saved successfully!', 'success');
     } catch (error) {
       console.error('Error saving settings:', error);
-      showSnackbar('Failed to save settings', 'error');
+      showSnackbar(`Failed to save settings: ${error.message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -488,7 +548,8 @@ const SystemSettings = () => {
                 label="Max Login Attempts"
                 type="number"
                 value={settings.security?.maxLoginAttempts || 5}
-                onChange={(e) => handleSettingChange('security', 'maxLoginAttempts', parseInt(e.target.value))}
+                onChange={handleNumberChange('security', 'maxLoginAttempts')}
+                inputRef={getInputRef('security', 'maxLoginAttempts')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -505,7 +566,8 @@ const SystemSettings = () => {
                 label="Session Timeout (minutes)"
                 type="number"
                 value={settings.security?.sessionTimeout || 30}
-                onChange={(e) => handleSettingChange('security', 'sessionTimeout', parseInt(e.target.value))}
+                onChange={handleNumberChange('security', 'sessionTimeout')}
+                inputRef={getInputRef('security', 'sessionTimeout')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -519,10 +581,11 @@ const SystemSettings = () => {
               />
 
               <TextField
-                label="Minimum Password Length"
+                label="Password Min Length"
                 type="number"
                 value={settings.security?.passwordMinLength || 8}
-                onChange={(e) => handleSettingChange('security', 'passwordMinLength', parseInt(e.target.value))}
+                onChange={handleNumberChange('security', 'passwordMinLength')}
+                inputRef={getInputRef('security', 'passwordMinLength')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -537,10 +600,9 @@ const SystemSettings = () => {
 
               <FormControlLabel
                 control={
-                  <Switch
+                  <StyledSwitch
                     checked={settings.security?.requireStrongPassword || false}
                     onChange={(e) => handleSettingChange('security', 'requireStrongPassword', e.target.checked)}
-                    color="primary"
                   />
                 }
                 label="Require Strong Passwords"
@@ -580,10 +642,11 @@ const SystemSettings = () => {
               />
 
               <TextField
-                label="Cache Timeout (seconds)"
+                label="Cache Timeout (minutes)"
                 type="number"
-                value={settings.performance?.cacheTimeout || 3600}
-                onChange={(e) => handleSettingChange('performance', 'cacheTimeout', parseInt(e.target.value))}
+                value={settings.performance?.cacheTimeout || 60}
+                onChange={handleNumberChange('performance', 'cacheTimeout')}
+                inputRef={getInputRef('performance', 'cacheTimeout')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -600,7 +663,8 @@ const SystemSettings = () => {
                 label="Max File Size (MB)"
                 type="number"
                 value={settings.performance?.maxFileSize || 100}
-                onChange={(e) => handleSettingChange('performance', 'maxFileSize', parseInt(e.target.value))}
+                onChange={handleNumberChange('performance', 'maxFileSize')}
+                inputRef={getInputRef('performance', 'maxFileSize')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -657,10 +721,11 @@ const SystemSettings = () => {
               />
 
               <TextField
-                label="Movies Per Page"
+                label="Max Movies Per Page"
                 type="number"
                 value={settings.content?.maxMoviesPerPage || 20}
-                onChange={(e) => handleSettingChange('content', 'maxMoviesPerPage', parseInt(e.target.value))}
+                onChange={handleNumberChange('content', 'maxMoviesPerPage')}
+                inputRef={getInputRef('content', 'maxMoviesPerPage')}
                 fullWidth
                 variant="outlined"
                 sx={{
@@ -705,6 +770,27 @@ const SystemSettings = () => {
                 label="Enable Downloads"
                 sx={{ color: 'white' }}
               />
+
+              <TextField
+                label="Download Timer (seconds)"
+                type="number"
+                value={settings.content?.downloadTimer || 30}
+                onChange={handleNumberChange('content', 'downloadTimer')}
+                inputRef={getInputRef('content', 'downloadTimer')}
+                fullWidth
+                variant="outlined"
+                inputProps={{ min: 1, max: 300 }}
+                helperText="Time users must wait before download becomes available (1-300 seconds)"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                  },
+                  '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                  '& .MuiFormHelperText-root': { color: 'rgba(255, 255, 255, 0.6)' },
+                }}
+              />
             </Box>
           </SettingsCard>
         </Grid>
@@ -748,12 +834,13 @@ const SystemSettings = () => {
                   </FormControl>
 
                   <TextField
-                    label="Backup Retention (days)"
-                    type="number"
-                    value={settings.backup?.backupRetention || 30}
-                    onChange={(e) => handleSettingChange('backup', 'backupRetention', parseInt(e.target.value))}
-                    fullWidth
-                    variant="outlined"
+                 label="Backup Retention (days)"
+                 type="number"
+                 value={settings.backup?.backupRetention || 30}
+                 onChange={handleNumberChange('backup', 'backupRetention')}
+                 inputRef={getInputRef('backup', 'backupRetention')}
+                 fullWidth
+                 variant="outlined"
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         color: 'white',
