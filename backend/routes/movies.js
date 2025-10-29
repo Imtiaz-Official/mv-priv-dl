@@ -177,6 +177,52 @@ router.get('/latest', async (req, res) => {
   }
 });
 
+// @desc    Get platform statistics (public)
+// @route   GET /api/movies/platform-stats
+// @access  Public
+router.get('/platform-stats', async (req, res) => {
+  try {
+    // Get platform statistics
+    const totalMovies = await Movie.countDocuments({ status: 'published' });
+    const totalTvShows = await Movie.countDocuments({ 
+      status: 'published', 
+      type: { $in: ['tv', 'series'] } 
+    });
+    const totalAnime = await Movie.countDocuments({ 
+      status: 'published', 
+      genre: { $in: ['Animation', 'Anime'] } 
+    });
+
+    // Format numbers with K+ suffix for large numbers
+    const formatCount = (count) => {
+      if (count >= 1000) {
+        return Math.floor(count / 1000) + 'K+';
+      }
+      return count.toString();
+    };
+
+    res.json({
+      success: true,
+      data: {
+        totalMovies: formatCount(totalMovies),
+        totalTvShows: formatCount(totalTvShows),
+        totalAnime: formatCount(totalAnime),
+        rawCounts: {
+          totalMovies,
+          totalTvShows,
+          totalAnime
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Platform stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching platform statistics'
+    });
+  }
+});
+
 // @desc    Get movie statistics (simple stats)
 // @route   GET /api/movies/stats
 // @access  Private (Moderator+)

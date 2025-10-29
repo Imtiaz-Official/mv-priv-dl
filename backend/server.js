@@ -111,6 +111,7 @@ const server = app.listen(PORT, async () => {
 🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}
 📱 API Base URL: http://localhost:${PORT}/api
 🌐 Health Check: http://localhost:${PORT}/api/health
+💾 Dashboard API: http://localhost:${PORT}/api/auth/dashboard
   `);
   
   // Initialize movie tracker

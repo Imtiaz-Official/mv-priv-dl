@@ -381,4 +381,93 @@ router.delete('/watchlist/:movieId', authenticate, async (req, res) => {
   }
 });
 
+// @desc    Get user dashboard data
+// @route   GET /api/auth/dashboard
+// @access  Private
+router.get('/dashboard', authenticate, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { Movie } = require('../models');
+
+    // Get user with populated data
+    const user = await User.findById(userId)
+      .populate('favorites', 'title poster slug genre')
+      .populate('watchlist', 'title poster slug genre');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Calculate favorite genres from user's favorites
+    const favoriteGenres = {};
+    user.favorites.forEach(movie => {
+      if (movie.genre && Array.isArray(movie.genre)) {
+        movie.genre.forEach(genre => {
+          favoriteGenres[genre] = (favoriteGenres[genre] || 0) + 1;
+        });
+      }
+    });
+
+    // Get top 3 favorite genres
+    const topGenres = Object.entries(favoriteGenres)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([genre]) => genre);
+
+    // Get recent activity (last movie added to favorites or watchlist)
+    let recentActivity = 'No recent activity';
+    if (user.favorites.length > 0) {
+      const lastFavorite = user.favorites[user.favorites.length - 1];
+      recentActivity = `Added ${lastFavorite.title} to favorites`;
+    } else if (user.watchlist.length > 0) {
+      const lastWatchlist = user.watchlist[user.watchlist.length - 1];
+      recentActivity = `Added ${lastWatchlist.title} to watchlist`;
+    }
+
+    // Get platform statistics
+    const totalMovies = await Movie.countDocuments({ status: 'published' });
+    const totalTvShows = await Movie.countDocuments({ 
+      status: 'published', 
+      type: { $in: ['tv', 'series'] } 
+    });
+    const totalAnime = await Movie.countDocuments({ 
+      status: 'published', 
+      genre: { $in: ['Animation', 'Anime'] } 
+    });
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+          lastLogin: user.lastLogin
+        },
+        statistics: {
+          watchlistCount: user.watchlist.length,
+          favoritesCount: user.favorites.length,
+          favoriteGenres: topGenres.length > 0 ? topGenres : ['Action', 'Drama', 'Comedy'],
+          recentActivity
+        },
+        platformStats: {
+          totalMovies,
+          totalTvShows,
+          totalAnime: totalAnime || Math.floor(totalMovies * 0.15) // Fallback calculation
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching dashboard data'
+    });
+  }
+});
+
 module.exports = router;

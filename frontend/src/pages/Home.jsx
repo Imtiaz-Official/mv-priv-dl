@@ -13,6 +13,7 @@ import {
   useTheme,
   Avatar,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import {
   Movie as MovieIcon,
@@ -22,14 +23,20 @@ import {
 } from '@mui/icons-material';
 
 import EnhancedHeroSection from '../components/Home/EnhancedHeroSection';
+import { useAuth } from '../hooks/useAuth';
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, isAuthenticated } = useAuth();
   
   const [heroMovie, setHeroMovie] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [platformStats, setPlatformStats] = useState(null);
+  const [platformStatsLoading, setPlatformStatsLoading] = useState(false);
 
   // Intersection observer hook
   const useIntersectionObserver = (options = {}) => {
@@ -55,6 +62,64 @@ const Home = () => {
 
   const { elementRef: overviewRef, hasIntersected: overviewInView } = useIntersectionObserver({ threshold: 0.1 });
   const { elementRef: ctaRef, hasIntersected: ctaInView } = useIntersectionObserver({ threshold: 0.1 });
+
+  // Fetch platform statistics (public endpoint)
+  const fetchPlatformStats = async () => {
+    try {
+      setPlatformStatsLoading(true);
+      const response = await fetch('http://localhost:5000/api/movies/platform-stats');
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setPlatformStats(data.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching platform stats:', error);
+    } finally {
+      setPlatformStatsLoading(false);
+    }
+  };
+
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      setDashboardLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/auth/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setDashboardData(data.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setDashboardLoading(false);
+    }
+  };
+
+  // Fetch dashboard data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchDashboardData();
+    }
+  }, [isAuthenticated]);
+
+  // Fetch platform statistics on component mount (public data)
+  useEffect(() => {
+    fetchPlatformStats();
+  }, []);
 
   // Fetch hero movie
   useEffect(() => {
@@ -128,16 +193,26 @@ const Home = () => {
     navigate(`/movie/${movie.id}`);
   };
 
-  // User overview data (this could come from user context/API in real app)
-  const userOverview = {
-    name: 'John Doe',
+  // User overview data - use real data if available, fallback to placeholder
+  const userOverview = dashboardData ? {
+    name: dashboardData.user.username,
+    avatar: dashboardData.user.avatar || '/placeholder-avatar.svg',
+    watchlistCount: dashboardData.statistics.watchlistCount,
+    favoriteGenres: dashboardData.statistics.favoriteGenres,
+    recentActivity: dashboardData.statistics.recentActivity,
+  } : {
+    name: user?.username || 'Guest',
     avatar: '/placeholder-avatar.svg',
-    watchlistCount: 12,
+    watchlistCount: 0,
     favoriteGenres: ['Action', 'Sci-Fi', 'Thriller'],
-    recentActivity: 'Watched Avengers: Endgame',
+    recentActivity: 'No recent activity',
   };
 
-  const quickStats = [
+  const quickStats = platformStats ? [
+    { label: 'Movies', count: platformStats.totalMovies, icon: <MovieIcon />, path: '/movies?type=movies' },
+    { label: 'TV Shows', count: platformStats.totalTvShows, icon: <TvIcon />, path: '/movies?type=tv' },
+    { label: 'Anime', count: platformStats.totalAnime, icon: <AnimeIcon />, path: '/movies?type=anime' },
+  ] : [
     { label: 'Movies', count: '10K+', icon: <MovieIcon />, path: '/movies?type=movies' },
     { label: 'TV Shows', count: '5K+', icon: <TvIcon />, path: '/movies?type=tv' },
     { label: 'Anime', count: '2K+', icon: <AnimeIcon />, path: '/movies?type=anime' },
@@ -190,29 +265,39 @@ const Home = () => {
                         borderRadius: 3,
                         p: 3,
                         textAlign: 'center',
+                        minHeight: 200,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
                       }}
                     >
-                      <Avatar
-                        src={userOverview.avatar}
-                        sx={{
-                          width: 80,
-                          height: 80,
-                          mx: 'auto',
-                          mb: 2,
-                          border: '3px solid rgba(102, 126, 234, 0.3)',
-                        }}
-                      >
-                        <PersonIcon sx={{ fontSize: 40 }} />
-                      </Avatar>
-                      <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                        {userOverview.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
-                        {userOverview.recentActivity}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                        {userOverview.watchlistCount} items in watchlist
-                      </Typography>
+                      {dashboardLoading ? (
+                        <CircularProgress sx={{ color: '#667eea', mx: 'auto' }} />
+                      ) : (
+                        <>
+                          <Avatar
+                            src={userOverview.avatar}
+                            sx={{
+                              width: 80,
+                              height: 80,
+                              mx: 'auto',
+                              mb: 2,
+                              border: '3px solid rgba(102, 126, 234, 0.3)',
+                            }}
+                          >
+                            <PersonIcon sx={{ fontSize: 40 }} />
+                          </Avatar>
+                          <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
+                            {userOverview.name}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
+                            {userOverview.recentActivity}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                            {userOverview.watchlistCount} items in watchlist
+                          </Typography>
+                        </>
+                      )}
                     </Card>
                   </Grid>
 
