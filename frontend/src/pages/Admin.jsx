@@ -151,8 +151,27 @@ const Admin = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   
-  const [activeTab, setActiveTab] = useState(0);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  // Initialize state from localStorage or use defaults
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const savedTab = localStorage.getItem('adminActiveTab');
+      const parsedTab = savedTab ? parseInt(savedTab, 10) : 0;
+      // Ensure the saved tab is valid (within menu items range)
+      return parsedTab >= 0 && parsedTab < 9 ? parsedTab : 0;
+    } catch (error) {
+      console.warn('Error reading admin tab from localStorage:', error);
+      return 0;
+    }
+  });
+  const [drawerOpen, setDrawerOpen] = useState(() => {
+    try {
+      const savedDrawerState = localStorage.getItem('adminDrawerOpen');
+      return savedDrawerState ? JSON.parse(savedDrawerState) : true;
+    } catch (error) {
+      console.warn('Error reading drawer state from localStorage:', error);
+      return true;
+    }
+  });
   const [movies, setMovies] = useState([]);
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -403,11 +422,24 @@ const Admin = () => {
   };
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    const newDrawerState = !drawerOpen;
+    setDrawerOpen(newDrawerState);
+    // Save drawer state to localStorage
+    try {
+      localStorage.setItem('adminDrawerOpen', JSON.stringify(newDrawerState));
+    } catch (error) {
+      console.warn('Error saving drawer state to localStorage:', error);
+    }
   };
 
   const handleTabChange = (newValue) => {
     setActiveTab(newValue);
+    // Save active tab to localStorage
+    try {
+      localStorage.setItem('adminActiveTab', newValue.toString());
+    } catch (error) {
+      console.warn('Error saving active tab to localStorage:', error);
+    }
   };
 
   if (loading) {
