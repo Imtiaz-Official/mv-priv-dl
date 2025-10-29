@@ -13,6 +13,7 @@ import {
   Fade,
   Alert,
   Snackbar,
+  CircularProgress,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -24,6 +25,7 @@ import {
   Instagram as InstagramIcon,
   YouTube as YouTubeIcon,
 } from '@mui/icons-material';
+import axios from 'axios';
 
 const Contact = () => {
   const theme = useTheme();
@@ -34,6 +36,9 @@ const Contact = () => {
     message: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,17 +48,65 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log('Contact form submitted:', formData);
-    setShowSuccess(true);
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      setErrorMessage('Please fill in all fields');
+      setShowError(true);
+      return;
+    }
+
+    // Additional frontend validation to match backend requirements
+    if (formData.name.trim().length < 2) {
+      setErrorMessage('Name must be at least 2 characters long');
+      setShowError(true);
+      return;
+    }
+
+    if (formData.subject.trim().length < 5) {
+      setErrorMessage('Subject must be at least 5 characters long');
+      setShowError(true);
+      return;
+    }
+
+    if (formData.message.trim().length < 10) {
+      setErrorMessage('Message must be at least 10 characters long');
+      setShowError(true);
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await axios.post('/api/contact', formData);
+      
+      if (response.status === 201) {
+        setShowSuccess(true);
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        // Display detailed validation errors from backend
+        const errorMessages = error.response.data.errors.map(err => err.msg).join(', ');
+        setErrorMessage(errorMessages);
+      } else if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('Failed to send message. Please try again later.');
+      }
+      setShowError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -259,6 +312,8 @@ const Contact = () => {
                             value={formData.name}
                             onChange={handleInputChange}
                             required
+                            placeholder="Enter your full name (min. 2 characters)"
+                            helperText="Minimum 2 characters required"
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 color: 'white',
@@ -274,6 +329,9 @@ const Contact = () => {
                               },
                               '& .MuiInputLabel-root': {
                                 color: 'rgba(255, 255, 255, 0.7)',
+                              },
+                              '& .MuiFormHelperText-root': {
+                                color: 'rgba(255, 255, 255, 0.5)',
                               },
                             }}
                           />
@@ -287,6 +345,8 @@ const Contact = () => {
                             value={formData.email}
                             onChange={handleInputChange}
                             required
+                            placeholder="your.email@example.com"
+                            helperText="We'll use this to respond to your message"
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 color: 'white',
@@ -302,6 +362,9 @@ const Contact = () => {
                               },
                               '& .MuiInputLabel-root': {
                                 color: 'rgba(255, 255, 255, 0.7)',
+                              },
+                              '& .MuiFormHelperText-root': {
+                                color: 'rgba(255, 255, 255, 0.5)',
                               },
                             }}
                           />
@@ -314,6 +377,8 @@ const Contact = () => {
                             value={formData.subject}
                             onChange={handleInputChange}
                             required
+                            placeholder="Brief description of your inquiry (min. 5 characters)"
+                            helperText="Minimum 5 characters required"
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 color: 'white',
@@ -329,6 +394,9 @@ const Contact = () => {
                               },
                               '& .MuiInputLabel-root': {
                                 color: 'rgba(255, 255, 255, 0.7)',
+                              },
+                              '& .MuiFormHelperText-root': {
+                                color: 'rgba(255, 255, 255, 0.5)',
                               },
                             }}
                           />
@@ -343,6 +411,8 @@ const Contact = () => {
                             value={formData.message}
                             onChange={handleInputChange}
                             required
+                            placeholder="Please provide details about your inquiry or feedback (min. 10 characters)"
+                            helperText="Minimum 10 characters required"
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 color: 'white',
@@ -359,6 +429,9 @@ const Contact = () => {
                               '& .MuiInputLabel-root': {
                                 color: 'rgba(255, 255, 255, 0.7)',
                               },
+                              '& .MuiFormHelperText-root': {
+                                color: 'rgba(255, 255, 255, 0.5)',
+                              },
                             }}
                           />
                         </Grid>
@@ -367,7 +440,8 @@ const Contact = () => {
                             type="submit"
                             variant="contained"
                             size="large"
-                            endIcon={<SendIcon />}
+                            disabled={isSubmitting}
+                            endIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
                             sx={{
                               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                               color: 'white',
@@ -382,9 +456,13 @@ const Contact = () => {
                                 transform: 'translateY(-2px)',
                                 boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
                               },
+                              '&:disabled': {
+                                background: 'rgba(102, 126, 234, 0.5)',
+                                color: 'rgba(255, 255, 255, 0.7)',
+                              },
                             }}
                           >
-                            Send Message
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
                           </Button>
                         </Grid>
                       </Grid>
@@ -409,6 +487,21 @@ const Contact = () => {
           sx={{ width: '100%' }}
         >
           Thank you for your message! We'll get back to you soon.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowError(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </Box>

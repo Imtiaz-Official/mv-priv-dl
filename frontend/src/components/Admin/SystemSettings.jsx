@@ -89,6 +89,16 @@ const SystemSettings = () => {
       pushNotifications: false,
       adminNotifications: true,
       userWelcomeEmail: true,
+      adminGmailAddress: '',
+      enableGmailNotifications: false,
+      gmailNotificationTypes: {
+        newUserRegistration: true,
+        newMovieUploaded: true,
+        downloadTracking: true,
+        systemAlerts: true,
+        userActivity: false,
+        errorReports: true,
+      },
     },
     
     // Backup Settings
@@ -792,6 +802,201 @@ const SystemSettings = () => {
                 }}
               />
             </Box>
+          </SettingsCard>
+        </Grid>
+
+        {/* Notification Settings */}
+        <Grid item xs={12}>
+          <SettingsCard 
+            title="Notification Settings" 
+            icon={<NotificationIcon sx={{ color: '#f59e0b' }} />}
+          >
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <FormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={settings.notifications?.emailNotifications || false}
+                        onChange={(e) => handleSettingChange('notifications', 'emailNotifications', e.target.checked)}
+                      />
+                    }
+                    label="Email Notifications"
+                    sx={{ color: 'white' }}
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={settings.notifications?.pushNotifications || false}
+                        onChange={(e) => handleSettingChange('notifications', 'pushNotifications', e.target.checked)}
+                      />
+                    }
+                    label="Push Notifications"
+                    sx={{ color: 'white' }}
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={settings.notifications?.adminNotifications || false}
+                        onChange={(e) => handleSettingChange('notifications', 'adminNotifications', e.target.checked)}
+                      />
+                    }
+                    label="Admin Notifications"
+                    sx={{ color: 'white' }}
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={settings.notifications?.userWelcomeEmail || false}
+                        onChange={(e) => handleSettingChange('notifications', 'userWelcomeEmail', e.target.checked)}
+                      />
+                    }
+                    label="User Welcome Email"
+                    sx={{ color: 'white' }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+                    Gmail Notifications
+                  </Typography>
+
+                  <TextField
+                    label="Admin Gmail Address"
+                    type="email"
+                    value={settings.notifications?.adminGmailAddress || ''}
+                    onChange={(e) => handleSettingChange('notifications', 'adminGmailAddress', e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    placeholder="admin@gmail.com"
+                    helperText="Gmail address to receive all site notifications and tracking information"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                        '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                      },
+                      '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                      '& .MuiFormHelperText-root': { color: 'rgba(255, 255, 255, 0.6)' },
+                    }}
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <StyledSwitch
+                        checked={settings.notifications?.enableGmailNotifications || false}
+                        onChange={(e) => handleSettingChange('notifications', 'enableGmailNotifications', e.target.checked)}
+                      />
+                    }
+                    label="Enable Gmail Notifications"
+                    sx={{ color: 'white' }}
+                  />
+
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 2 }}>
+                      Notification Types:
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.newUserRegistration || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              newUserRegistration: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="New User Registration"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.newMovieUploaded || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              newMovieUploaded: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="New Movie Uploaded"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.downloadTracking || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              downloadTracking: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="Download Tracking"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.systemAlerts || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              systemAlerts: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="System Alerts"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.userActivity || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              userActivity: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="User Activity"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+
+                      <FormControlLabel
+                        control={
+                          <StyledSwitch
+                            checked={settings.notifications?.gmailNotificationTypes?.errorReports || false}
+                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                              ...settings.notifications?.gmailNotificationTypes,
+                              errorReports: e.target.checked
+                            })}
+                            size="small"
+                          />
+                        }
+                        label="Error Reports"
+                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
           </SettingsCard>
         </Grid>
 

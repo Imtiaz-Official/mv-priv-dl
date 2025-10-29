@@ -126,6 +126,52 @@ const settingsSchema = new mongoose.Schema({
     userWelcomeEmail: {
       type: Boolean,
       default: true
+    },
+    // Gmail Settings for Admin Notifications
+    adminGmailAddress: {
+      type: String,
+      default: '',
+      validate: {
+        validator: function(v) {
+          // Allow empty string or valid email format
+          return !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: 'Please enter a valid Gmail address'
+      }
+    },
+    enableGmailNotifications: {
+      type: Boolean,
+      default: false
+    },
+    gmailNotificationTypes: {
+      newUserRegistration: {
+        type: Boolean,
+        default: true
+      },
+      newMovieUploaded: {
+        type: Boolean,
+        default: true
+      },
+      downloadTracking: {
+        type: Boolean,
+        default: true
+      },
+      systemErrors: {
+        type: Boolean,
+        default: true
+      },
+      systemAlerts: {
+        type: Boolean,
+        default: true
+      },
+      dailyReports: {
+        type: Boolean,
+        default: false
+      },
+      weeklyReports: {
+        type: Boolean,
+        default: true
+      }
     }
   },
 
