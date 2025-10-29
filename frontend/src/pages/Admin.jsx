@@ -50,14 +50,18 @@ import {
   Animation as AnimeIcon,
   TrendingUp as TrendingUpIcon,
   Visibility as ViewsIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
-// Import the new admin components
+// Import the admin components
 import AnalyticsDashboard from '../components/Admin/AnalyticsDashboard';
 import UserManagement from '../components/Admin/UserManagement';
 import MovieManagement from '../components/Admin/MovieManagement';
 import ContentModeration from '../components/Admin/ContentModeration';
 import DownloadManagement from '../components/Admin/DownloadManagement';
+import SystemSettings from '../components/Admin/SystemSettings';
+import { useAuth } from '../hooks/useAuth';
 
 const drawerWidth = 280;
 
@@ -144,6 +148,9 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 const Admin = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  
   const [activeTab, setActiveTab] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [movies, setMovies] = useState([]);
@@ -422,6 +429,11 @@ const Admin = () => {
     );
   }
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <Box sx={{ 
       display: 'flex',
@@ -443,9 +455,22 @@ const Admin = () => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Admin Panel
           </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mr: 2 }}>
             Welcome, Admin
           </Typography>
+          <Button
+            color="inherit"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+            sx={{
+              color: 'rgba(255, 255, 255, 0.9)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            Logout
+          </Button>
         </Toolbar>
       </StyledAppBar>
 
@@ -858,12 +883,7 @@ const Admin = () => {
 
         {/* Settings Tab */}
         <TabPanel value={activeTab} index={8}>
-          <Typography variant="h4" sx={{ color: 'white', mb: 4, fontWeight: 600 }}>
-            Settings
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            System settings and configuration options will be implemented here.
-          </Typography>
+          <SystemSettings />
         </TabPanel>
       </Main>
 

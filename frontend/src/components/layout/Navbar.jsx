@@ -36,6 +36,7 @@ import {
   GetApp as DownloadIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
+import { useAuth } from '../../hooks/useAuth';
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -45,14 +46,21 @@ const Navbar = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, isAuthenticated } = useAuth();
 
-  const navigationItems = [
+  // Base navigation items
+  const baseNavigationItems = [
     { name: 'Home', path: '/', icon: HomeIcon },
     { name: 'Movies', path: '/movies', icon: MovieIcon },
     { name: 'Watchlist', path: '/watchlist', icon: BookmarkIcon },
     { name: 'Profile', path: '/profile', icon: PersonIcon },
     { name: 'Blog', path: '/blog', icon: ArticleIcon },
-    { name: 'Admin', path: '/admin', icon: AdminIcon },
+  ];
+
+  // Add admin link only if user is authenticated and is an admin
+  const navigationItems = [
+    ...baseNavigationItems,
+    ...(isAuthenticated && user?.role === 'admin' ? [{ name: 'Admin', path: '/admin', icon: AdminIcon }] : [])
   ];
 
   const handleDrawerToggle = () => {
