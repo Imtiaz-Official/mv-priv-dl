@@ -109,85 +109,104 @@ const AnalyticsDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       
-      // Fetch analytics data from multiple endpoints
+      // Fetch analytics data from the new comprehensive analytics endpoint
+      const response = await fetch('http://localhost:5000/api/analytics/dashboard', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          const analyticsData = data.data;
+          
+          setAnalytics({
+            overview: {
+              totalMovies: analyticsData.totalMovies || 0,
+              totalUsers: analyticsData.totalUsers || 0,
+              totalDownloads: analyticsData.totalDownloads || 0,
+              totalViews: analyticsData.totalViews || 0,
+              monthlyGrowth: analyticsData.monthlyGrowth?.users || 0,
+              activeUsers: analyticsData.activeUsers || 0,
+            },
+            trends: {
+              moviesGrowth: analyticsData.monthlyGrowth?.movies || 0,
+              usersGrowth: analyticsData.monthlyGrowth?.users || 0,
+              downloadsGrowth: analyticsData.monthlyGrowth?.downloads || 0,
+              viewsGrowth: analyticsData.monthlyGrowth?.views || 0,
+            },
+            topMovies: analyticsData.topMovies?.byDownloads || [],
+            recentActivity: analyticsData.recentActivity || [],
+            genreStats: analyticsData.genreStats || [],
+            qualityStats: analyticsData.qualityStats || [],
+          });
+          return;
+        }
+      }
+
+      // Fallback: Try individual endpoints if dashboard endpoint fails
       const [overviewRes, trendsRes, topMoviesRes, activityRes] = await Promise.all([
-        fetch('http://localhost:5000/api/movies/stats/overview', {
+        fetch('http://localhost:5000/api/analytics/overview', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:5000/api/movies/stats/trends', {
+        fetch('http://localhost:5000/api/analytics/trends', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:5000/api/movies/stats/top', {
+        fetch('http://localhost:5000/api/analytics/top-movies', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:5000/api/movies/stats/activity', {
+        fetch('http://localhost:5000/api/analytics/activity', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
 
-      // Use mock data if API calls fail
-      const mockAnalytics = {
-        overview: {
-          totalMovies: 1847,
-          totalUsers: 23456,
-          totalDownloads: 156789,
-          totalViews: 3456789,
-          monthlyGrowth: 15.7,
-          activeUsers: 12890,
-        },
-        trends: {
-          moviesGrowth: 12.5,
-          usersGrowth: 8.3,
-          downloadsGrowth: 23.1,
-          viewsGrowth: 18.7,
-        },
-        topMovies: [
-          { id: 1, title: 'Avengers: Endgame', downloads: 15420, views: 89650, rating: 8.4 },
-          { id: 2, title: 'Spider-Man: No Way Home', downloads: 12350, views: 67890, rating: 8.2 },
-          { id: 3, title: 'The Batman', downloads: 9870, views: 45620, rating: 7.8 },
-          { id: 4, title: 'Top Gun: Maverick', downloads: 8765, views: 43210, rating: 8.1 },
-          { id: 5, title: 'Black Panther', downloads: 7654, views: 38900, rating: 7.9 },
-        ],
-        recentActivity: [
-          { type: 'movie_added', title: 'John Wick 4', time: '2 hours ago', user: 'Admin' },
-          { type: 'user_registered', title: 'New user registration', time: '3 hours ago', user: 'john_doe' },
-          { type: 'movie_downloaded', title: 'The Matrix downloaded', time: '4 hours ago', user: 'movie_fan' },
-          { type: 'post_published', title: 'Movie Review: Dune', time: '5 hours ago', user: 'reviewer' },
-          { type: 'movie_rated', title: 'Inception rated 5 stars', time: '6 hours ago', user: 'critic' },
-        ],
-        genreStats: [
-          { genre: 'Action', count: 245, percentage: 28 },
-          { genre: 'Drama', count: 198, percentage: 23 },
-          { genre: 'Comedy', count: 167, percentage: 19 },
-          { genre: 'Thriller', count: 134, percentage: 15 },
-          { genre: 'Sci-Fi', count: 89, percentage: 10 },
-          { genre: 'Horror', count: 45, percentage: 5 },
-        ],
-        qualityStats: [
-          { quality: '4K', count: 456, percentage: 45 },
-          { quality: '1080p', count: 678, percentage: 35 },
-          { quality: '720p', count: 234, percentage: 20 },
-        ],
-      };
+      const overview = overviewRes.ok ? await overviewRes.json() : null;
+      const trends = trendsRes.ok ? await trendsRes.json() : null;
+      const topMovies = topMoviesRes.ok ? await topMoviesRes.json() : null;
+      const activity = activityRes.ok ? await activityRes.json() : null;
 
-      setAnalytics(mockAnalytics);
+      if (overview?.success || trends?.success || topMovies?.success || activity?.success) {
+        setAnalytics({
+          overview: overview?.data || {
+            totalMovies: 0,
+            totalUsers: 0,
+            totalDownloads: 0,
+            totalViews: 0,
+            monthlyGrowth: 0,
+            activeUsers: 0,
+          },
+          trends: trends?.data || {
+            moviesGrowth: 0,
+            usersGrowth: 0,
+            downloadsGrowth: 0,
+            viewsGrowth: 0,
+          },
+          topMovies: topMovies?.data || [],
+          recentActivity: activity?.data || [],
+          genreStats: [],
+          qualityStats: [],
+        });
+        return;
+      }
+
+      throw new Error('All API endpoints failed');
+
     } catch (error) {
       console.error('Error fetching analytics:', error);
-      // Set mock data on error
+      // Set empty data instead of mock data to show real state
       setAnalytics({
         overview: {
-          totalMovies: 1847,
-          totalUsers: 23456,
-          totalDownloads: 156789,
-          totalViews: 3456789,
-          monthlyGrowth: 15.7,
-          activeUsers: 12890,
+          totalMovies: 0,
+          totalUsers: 0,
+          totalDownloads: 0,
+          totalViews: 0,
+          monthlyGrowth: 0,
+          activeUsers: 0,
         },
         trends: {
-          moviesGrowth: 12.5,
-          usersGrowth: 8.3,
-          downloadsGrowth: 23.1,
-          viewsGrowth: 18.7,
+          moviesGrowth: 0,
+          usersGrowth: 0,
+          downloadsGrowth: 0,
+          viewsGrowth: 0,
         },
         topMovies: [],
         recentActivity: [],

@@ -2,6 +2,7 @@ const express = require('express');
 const { Download, Movie } = require('../models');
 const { authenticate, requireModerator, optionalAuth } = require('../middleware/auth');
 const { validateDownload, validatePagination, validateObjectId } = require('../middleware/validation');
+const { trackDownload } = require('../middleware/viewTracker');
 
 const router = express.Router();
 
@@ -274,7 +275,7 @@ router.delete('/:id', authenticate, requireModerator, validateObjectId('id'), as
 // @desc    Track download
 // @route   POST /api/downloads/:id/track
 // @access  Public
-router.post('/:id/track', validateObjectId('id'), async (req, res) => {
+router.post('/:id/track', validateObjectId('id'), trackDownload, async (req, res) => {
   try {
     const download = await Download.findById(req.params.id);
 

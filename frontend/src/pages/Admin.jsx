@@ -161,6 +161,9 @@ const Admin = () => {
   // Platform statistics
   const [platformStats, setPlatformStats] = useState({
     totalMovies: 0,
+    totalUsers: 0,
+    totalDownloads: 0,
+    totalPosts: 0,
     totalTvShows: 0,
     totalAnime: 0,
     totalViews: 0,
@@ -184,26 +187,63 @@ const Admin = () => {
     fetchData();
   }, []);
 
-  const calculatePlatformStats = useCallback(() => {
-    // Calculate movie statistics by type
+  const calculatePlatformStats = useCallback(async () => {
+    try {
+      // Fetch real analytics data from the new analytics endpoint
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/analytics/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          const analytics = data.data;
+          setPlatformStats({
+            totalMovies: analytics.totalMovies || 0,
+            totalUsers: analytics.totalUsers || 0,
+            totalDownloads: analytics.totalDownloads || 0,
+            totalPosts: analytics.totalPosts || 0,
+            totalTvShows: analytics.moviesByType?.tv || 0,
+            totalAnime: analytics.moviesByType?.anime || 0,
+            activeUsers: analytics.activeUsers || 0,
+            totalViews: analytics.totalViews || 0,
+            monthlyGrowth: analytics.monthlyGrowth?.users || 0,
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching analytics data:', error);
+    }
+
+    // Fallback to calculating from existing data if analytics endpoint fails
+    const activeUsers = users.filter(user => 
+      user.status === 'active' && 
+      new Date(user.lastLogin) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    ).length;
+
     const moviesByType = movies.reduce((acc, movie) => {
       const type = movie.type || 'movie';
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {});
 
-    // Calculate active users
-    const activeUsers = users.filter(user => user.isActive).length;
-
     setPlatformStats({
-      totalMovies: moviesByType.movie || 0,
+      totalMovies: movies.length,
+      totalUsers: users.length,
+      totalDownloads: movies.reduce((sum, movie) => sum + (movie.downloads || 0), 0),
+      totalPosts: posts.length,
       totalTvShows: moviesByType.tv || 0,
       totalAnime: moviesByType.anime || 0,
       activeUsers,
-      totalViews: Math.floor(Math.random() * 100000) + 50000, // Mock data for views
-      monthlyGrowth: Math.floor(Math.random() * 20) + 5, // Mock growth percentage
+      totalViews: movies.reduce((sum, movie) => sum + (movie.views || 0), 0),
+      monthlyGrowth: 0, // No growth calculation without historical data
     });
-  }, [movies, users]);
+  }, [movies, users, posts]);
 
   useEffect(() => {
     // Only calculate stats if we have data
@@ -211,6 +251,13 @@ const Admin = () => {
       calculatePlatformStats();
     }
   }, [calculatePlatformStats]);
+
+  // Add separate effect to recalculate when posts change
+  useEffect(() => {
+    if (posts.length > 0) {
+      calculatePlatformStats();
+    }
+  }, [posts, calculatePlatformStats]);
 
   const fetchData = async () => {
     try {

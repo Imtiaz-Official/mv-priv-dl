@@ -2,6 +2,7 @@ const express = require('express');
 const { Movie } = require('../models');
 const { authenticate, requireModerator, optionalAuth } = require('../middleware/auth');
 const { validateMovie, validatePagination, validateSearch, validateObjectId } = require('../middleware/validation');
+const { trackMovieView } = require('../middleware/viewTracker');
 const imageService = require('../services/imageService');
 
 const router = express.Router();
@@ -331,7 +332,7 @@ router.get('/suggestions', async (req, res) => {
 // @desc    Get movie by ID or slug
 // @route   GET /api/movies/:identifier
 // @access  Public
-router.get('/:identifier', optionalAuth, async (req, res) => {
+router.get('/:identifier', optionalAuth, trackMovieView, async (req, res) => {
   try {
     const { identifier } = req.params;
     
