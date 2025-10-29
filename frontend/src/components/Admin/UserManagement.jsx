@@ -210,30 +210,81 @@ const UserManagement = () => {
   const fetchUserStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users/stats', {
+      console.log('Token exists:', !!token);
+      console.log('Token length:', token ? token.length : 0);
+      
+      // Try admin endpoint first
+      let response = await fetch('http://localhost:5000/api/users/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
+      console.log('Admin endpoint - Response status:', response.status);
+      console.log('Admin endpoint - Response ok:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Admin API response data:', data);
         if (data.success) {
           setUserStats(data.data);
+          return;
         }
-      } else {
-        // Fallback to calculated stats from users
-        const mockStats = {
-          totalUsers: 23456,
-          activeUsers: 18234,
-          newUsersThisMonth: 1234,
-          adminUsers: 12,
-          moderatorUsers: 45,
-          blockedUsers: 234,
-        };
-        setUserStats(mockStats);
       }
+
+      // If admin endpoint fails, try public endpoint
+      console.log('Trying public endpoint...');
+      response = await fetch('http://localhost:5000/api/users/stats/public');
+      
+      console.log('Public endpoint - Response status:', response.status);
+      console.log('Public endpoint - Response ok:', response.ok);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Public API response data:', data);
+        if (data.success) {
+          // For public endpoint, we need to get admin/moderator counts from user list
+          const usersResponse = await fetch('http://localhost:5000/api/users', {
+            headers: token ? {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            } : {}
+          });
+          
+          if (usersResponse.ok) {
+            const usersData = await usersResponse.json();
+            if (usersData.success && usersData.data) {
+              const adminCount = usersData.data.filter(user => user.role === 'admin').length;
+              const moderatorCount = usersData.data.filter(user => user.role === 'moderator').length;
+              const blockedCount = usersData.data.filter(user => !user.isActive).length;
+              
+              setUserStats({
+                ...data.data,
+                adminUsers: adminCount,
+                moderatorUsers: moderatorCount,
+                blockedUsers: blockedCount
+              });
+              return;
+            }
+          }
+          
+          setUserStats(data.data);
+          return;
+        }
+      }
+      
+      // Final fallback to mock stats
+      console.log('Falling back to mock stats');
+      const mockStats = {
+        totalUsers: 23456,
+        activeUsers: 18234,
+        newUsersThisMonth: 1234,
+        adminUsers: 45,
+        moderatorUsers: 234,
+        blockedUsers: 156,
+      };
+      setUserStats(mockStats);
     } catch (error) {
       console.error('Error fetching user stats:', error);
       setUserStats({

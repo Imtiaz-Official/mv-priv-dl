@@ -501,21 +501,67 @@ router.patch('/:id/role', authenticate, requireAdmin, validateObjectId('id'), as
 
 // @desc    Get user statistics (simple stats)
 // @route   GET /api/users/stats
-// @access  Private (Moderator+)
-router.get('/stats', authenticate, requireModerator, async (req, res) => {
+// @access  Private (Admin only for detailed stats)
+router.get('/stats', authenticate, requireAdmin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const activeUsers = await User.countDocuments({ isActive: true });
     const adminUsers = await User.countDocuments({ role: 'admin' });
     const moderatorUsers = await User.countDocuments({ role: 'moderator' });
+    const blockedUsers = await User.countDocuments({ isActive: false });
+    
+    // Calculate new users this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const newUsersThisMonth = await User.countDocuments({
+      createdAt: { $gte: startOfMonth }
+    });
 
     res.json({
       success: true,
       data: {
         totalUsers,
         activeUsers,
+        newUsersThisMonth,
         adminUsers,
-        moderatorUsers
+        moderatorUsers,
+        blockedUsers
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching user statistics'
+    });
+  }
+});
+
+// @desc    Get basic user statistics (public)
+// @route   GET /api/users/stats/public
+// @access  Public
+router.get('/stats/public', async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ isActive: true });
+    
+    // Calculate new users this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const newUsersThisMonth = await User.countDocuments({
+      createdAt: { $gte: startOfMonth }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalUsers,
+        activeUsers,
+        newUsersThisMonth,
+        adminUsers: 0, // Hidden for public
+        moderatorUsers: 0, // Hidden for public
+        blockedUsers: 0 // Hidden for public
       }
     });
   } catch (error) {

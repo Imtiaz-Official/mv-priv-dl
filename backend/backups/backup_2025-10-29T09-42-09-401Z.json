@@ -1,0 +1,1129 @@
+{
+  "timestamp": "2025-10-29T09:42:09.407Z",
+  "version": "1.0.0",
+  "collections": {
+    "posts": [],
+    "users": [
+      {
+        "_id": "69017fad1f97e419857fc766",
+        "username": "admin",
+        "email": "admin@example.com",
+        "password": "$2a$12$yC98VNpm/n167wSVUUCsuuTRC.BdCQdEPUO23trzpTfkVPbiCnpxK",
+        "role": "admin",
+        "avatar": null,
+        "isActive": true,
+        "lastLogin": "2025-10-29T09:30:49.099Z",
+        "favorites": [],
+        "watchlist": [],
+        "createdAt": "2025-10-29T02:45:01.221Z",
+        "updatedAt": "2025-10-29T09:30:49.100Z",
+        "__v": 0
+      }
+    ],
+    "downloads": [],
+    "movies": [
+      {
+        "_id": "6901814e33edf1aa6d059449",
+        "title": "Hannibal RisingBluRay 480P 720P Gdrive",
+        "description": "Hannibal RisingBluRay 480P 720P Gdrive is a 2007 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2007,
+        "duration": 98,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901814e33edf1aa6d05944a"
+          }
+        ],
+        "poster": "/placeholder-movie.svg",
+        "backdrop": "/placeholder-backdrop.svg",
+        "imdbRating": 7.8673377287739825,
+        "rating": {
+          "average": 8.363658228042354,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 26,
+        "downloads": 0,
+        "tags": [
+          "bluray",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T02:51:58.390Z",
+        "updatedAt": "2025-10-29T07:04:25.747Z",
+        "slug": "hannibal-risingbluray-480p-720p-gdrive",
+        "__v": 0,
+        "tmdbId": null
+      },
+      {
+        "_id": "6901814e33edf1aa6d059453",
+        "title": "Billionaire Island : Season 1 Dual/Multi Audio [Hindi ORG, ENG & Norwegian] WEB-DL 720p HEVC | [Complete]",
+        "description": "Billionaire Island : Season 1 Dual/Multi Audio [Hindi ORG, ENG & Norwegian] WEB-DL 720p HEVC | [Complete] is a 2025 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2025,
+        "duration": 139,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901814e33edf1aa6d059454"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/qcTXvYBxQriORMJwTD8NsUxXRcu.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/qcTXvYBxQriORMJwTD8NsUxXRcu.jpg",
+        "imdbRating": 6.568988077309278,
+        "rating": {
+          "average": 6.341483105916393,
+          "count": 0
+        },
+        "quality": [
+          "WEBDL"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "webdl",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T02:51:58.405Z",
+        "updatedAt": "2025-10-29T02:51:58.405Z",
+        "slug": "billionaire-island-season-1-dualmulti-audio-hindi-org-eng-norwegian-web-dl-720p-hevc-complete",
+        "__v": 0
+      },
+      {
+        "_id": "6901814e33edf1aa6d059457",
+        "title": "KandunganTagalog [Filipino] VMAX WEB-DL 480p, 720p & 1080p | GDRive | ESub",
+        "description": "KandunganTagalog [Filipino] VMAX WEB-DL 480p, 720p & 1080p | GDRive | ESub is a 2025 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2025,
+        "duration": 131,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901814e33edf1aa6d059458"
+          }
+        ],
+        "poster": "https://fojik.site/wp-content/uploads/image-83-1-185x278.png",
+        "backdrop": "https://fojik.site/wp-content/uploads/image-83-1-185x278.png",
+        "imdbRating": 7.9465347408180875,
+        "rating": {
+          "average": 7.375433380952473,
+          "count": 0
+        },
+        "quality": [
+          "WEBDL"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": true,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "webdl",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T02:51:58.409Z",
+        "updatedAt": "2025-10-29T02:51:58.409Z",
+        "slug": "kandungantagalog-filipino-vmax-web-dl-480p-720p-1080p-gdrive-esub",
+        "__v": 0
+      },
+      {
+        "_id": "6901ad6f9c28bcbe2ae88874",
+        "title": "The MessengerBluRay 480P 720P GDrive",
+        "description": "The MessengerBluRay 480P 720P GDrive is a 2019 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2019,
+        "duration": 127,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901ad6f9c28bcbe2ae88875"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/vtIra9QIjPxsgy44BajggGfo1sT.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/vtIra9QIjPxsgy44BajggGfo1sT.jpg",
+        "imdbRating": 6.17945077504064,
+        "rating": {
+          "average": 8.300393819602842,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "bluray",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:00:15.857Z",
+        "updatedAt": "2025-10-29T06:00:15.857Z",
+        "slug": "the-messengerbluray-480p-720p-gdrive",
+        "__v": 0
+      },
+      {
+        "_id": "6901ad6f9c28bcbe2ae88878",
+        "title": "Lord of the FliesBluRay 480P 720P GDrive",
+        "description": "Lord of the FliesBluRay 480P 720P GDrive is a 1990 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 1990,
+        "duration": 135,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901ad6f9c28bcbe2ae88879"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "imdbRating": 7.112541698356157,
+        "rating": {
+          "average": 7.065128365664067,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "bluray",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:00:15.864Z",
+        "updatedAt": "2025-10-29T06:00:15.864Z",
+        "slug": "lord-of-the-fliesbluray-480p-720p-gdrive",
+        "__v": 0
+      },
+      {
+        "_id": "6901ad6f9c28bcbe2ae8887c",
+        "title": "HerculesDual Audio [Hindi – ENG] EXTENDED BluRay 480p & 720p GDrive",
+        "description": "HerculesDual Audio [Hindi – ENG] EXTENDED BluRay 480p & 720p GDrive is a 2014 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2014,
+        "duration": 144,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901ad6f9c28bcbe2ae8887d"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/nl18gyzai02Tu99VkURu7kCFrR8.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/nl18gyzai02Tu99VkURu7kCFrR8.jpg",
+        "imdbRating": 8.339330557693014,
+        "rating": {
+          "average": 7.353788266783586,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": true,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "bluray",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:00:15.868Z",
+        "updatedAt": "2025-10-29T06:00:15.868Z",
+        "slug": "herculesdual-audio-hindi-eng-extended-bluray-480p-720p-gdrive",
+        "__v": 0
+      },
+      {
+        "_id": "6901ad6f9c28bcbe2ae88882",
+        "title": "The House with a Clock in Its WallsBluRay 480p & 720p GDrive | 1DRive",
+        "description": "The House with a Clock in Its WallsBluRay 480p & 720p GDrive | 1DRive is a 2018 movie featuring exciting storylines and compelling characters.",
+        "releaseYear": 2018,
+        "duration": 113,
+        "genres": [
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Unknown Director",
+        "cast": [
+          {
+            "name": "Unknown Actor",
+            "character": "Unknown",
+            "_id": "6901ad6f9c28bcbe2ae88883"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 8.900962656046627,
+        "rating": {
+          "average": 6.0746875672657765,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "bluray",
+          "fojik"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:00:15.873Z",
+        "updatedAt": "2025-10-29T06:00:15.873Z",
+        "slug": "the-house-with-a-clock-in-its-wallsbluray-480p-720p-gdrive-1drive",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec3463",
+        "title": "Avengers: Endgame",
+        "originalTitle": "Avengers: Endgame",
+        "description": "After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe.",
+        "releaseYear": 2019,
+        "duration": 181,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Sci-Fi"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Anthony Russo, Joe Russo",
+        "cast": [
+          {
+            "name": "Robert Downey Jr.",
+            "character": "Tony Stark / Iron Man",
+            "_id": "6901ae47dae8210b69ec3464"
+          },
+          {
+            "name": "Chris Evans",
+            "character": "Steve Rogers / Captain America",
+            "_id": "6901ae47dae8210b69ec3465"
+          },
+          {
+            "name": "Mark Ruffalo",
+            "character": "Bruce Banner / Hulk",
+            "_id": "6901ae47dae8210b69ec3466"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 8.4,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "2.5GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 2,
+        "downloads": 0,
+        "tags": [
+          "superhero",
+          "marvel",
+          "action",
+          "adventure"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.058Z",
+        "updatedAt": "2025-10-29T08:02:25.270Z",
+        "slug": "avengers-endgame",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec346e",
+        "title": "Spider-Man: No Way Home",
+        "originalTitle": "Spider-Man: No Way Home",
+        "description": "With Spider-Man's identity now revealed, Peter asks Doctor Strange for help. When a spell goes wrong, dangerous foes from other worlds start to appear, forcing Peter to discover what it truly means to be Spider-Man.",
+        "releaseYear": 2021,
+        "duration": 148,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Sci-Fi"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Jon Watts",
+        "cast": [
+          {
+            "name": "Tom Holland",
+            "character": "Peter Parker / Spider-Man",
+            "_id": "6901ae47dae8210b69ec346f"
+          },
+          {
+            "name": "Zendaya",
+            "character": "MJ",
+            "_id": "6901ae47dae8210b69ec3470"
+          },
+          {
+            "name": "Benedict Cumberbatch",
+            "character": "Doctor Strange",
+            "_id": "6901ae47dae8210b69ec3471"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 8.2,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "2.1GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "superhero",
+          "marvel",
+          "spider-man",
+          "multiverse"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.067Z",
+        "updatedAt": "2025-10-29T06:58:04.338Z",
+        "slug": "spider-man-no-way-home",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec347a",
+        "title": "The Batman",
+        "originalTitle": "The Batman",
+        "description": "When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.",
+        "releaseYear": 2022,
+        "duration": 176,
+        "genres": [
+          "Action",
+          "Crime",
+          "Drama"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Matt Reeves",
+        "cast": [
+          {
+            "name": "Robert Pattinson",
+            "character": "Bruce Wayne / Batman",
+            "_id": "6901ae47dae8210b69ec347b"
+          },
+          {
+            "name": "Zoë Kravitz",
+            "character": "Selina Kyle / Catwoman",
+            "_id": "6901ae47dae8210b69ec347c"
+          },
+          {
+            "name": "Paul Dano",
+            "character": "The Riddler",
+            "_id": "6901ae47dae8210b69ec347d"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 7.8,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "2.3GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "batman",
+          "dc",
+          "crime",
+          "thriller"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.073Z",
+        "updatedAt": "2025-10-29T06:58:05.421Z",
+        "slug": "the-batman",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec3485",
+        "title": "Top Gun: Maverick",
+        "originalTitle": "Top Gun: Maverick",
+        "description": "After thirty years, Maverick is still pushing the envelope as a top naval aviator, but must confront ghosts of his past when he leads TOP GUN's elite graduates on a mission that demands the ultimate sacrifice from those chosen to fly it.",
+        "releaseYear": 2022,
+        "duration": 130,
+        "genres": [
+          "Action",
+          "Drama"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Joseph Kosinski",
+        "cast": [
+          {
+            "name": "Tom Cruise",
+            "character": "Pete 'Maverick' Mitchell",
+            "_id": "6901ae47dae8210b69ec3486"
+          },
+          {
+            "name": "Miles Teller",
+            "character": "Bradley 'Rooster' Bradshaw",
+            "_id": "6901ae47dae8210b69ec3487"
+          },
+          {
+            "name": "Jennifer Connelly",
+            "character": "Penny Benjamin",
+            "_id": "6901ae47dae8210b69ec3488"
+          }
+        ],
+        "poster": "https://i.imgbd.org/poster_pyml1759089610.jpg",
+        "backdrop": "https://i.imgbd.org/poster_pyml1759089610.jpg",
+        "imdbRating": 8.3,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "1.9GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "action",
+          "aviation",
+          "military",
+          "sequel"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.078Z",
+        "updatedAt": "2025-10-29T06:58:09.176Z",
+        "slug": "top-gun-maverick",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec348f",
+        "title": "Black Panther: Wakanda Forever",
+        "originalTitle": "Black Panther: Wakanda Forever",
+        "description": "The people of Wakanda fight to protect their home from intervening world powers as they mourn the death of King T'Challa.",
+        "releaseYear": 2022,
+        "duration": 161,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Drama"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Ryan Coogler",
+        "cast": [
+          {
+            "name": "Letitia Wright",
+            "_id": "6901cdb60d1b14f22f3bd05b"
+          },
+          {
+            "name": "Angela Bassett",
+            "_id": "6901cdb60d1b14f22f3bd05c"
+          },
+          {
+            "name": "Tenoch Huerta",
+            "_id": "6901cdb60d1b14f22f3bd05d"
+          }
+        ],
+        "poster": "https://fojik.com/wp-content/uploads/bxCTPBtVduUotUqKMBgz6lJQUJi-185x278.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 6.7,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "2.2GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 6,
+        "downloads": 0,
+        "tags": [
+          "marvel",
+          "superhero",
+          "wakanda",
+          "action"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.083Z",
+        "updatedAt": "2025-10-29T08:18:54.969Z",
+        "slug": "black-panther-wakanda-forever",
+        "__v": 0,
+        "trailer": ""
+      },
+      {
+        "_id": "6901ae47dae8210b69ec3498",
+        "title": "Avatar: The Way of Water",
+        "originalTitle": "Avatar: The Way of Water",
+        "description": "Jake Sully lives with his newfamily formed on the planet of Pandora. Once a familiar threat returns to finish what was previously started, Jake must work with Neytiri and the army of the Na'vi race to protect their planet.",
+        "releaseYear": 2022,
+        "duration": 192,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Sci-Fi"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "James Cameron",
+        "cast": [
+          {
+            "name": "Sam Worthington",
+            "character": "Jake Sully",
+            "_id": "6901ae47dae8210b69ec3499"
+          },
+          {
+            "name": "Zoe Saldana",
+            "character": "Neytiri",
+            "_id": "6901ae47dae8210b69ec349a"
+          },
+          {
+            "name": "Sigourney Weaver",
+            "character": "Kiri",
+            "_id": "6901ae47dae8210b69ec349b"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "imdbRating": 7.6,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL",
+          "4K"
+        ],
+        "size": "3.1GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "avatar",
+          "pandora",
+          "sci-fi",
+          "adventure"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.086Z",
+        "updatedAt": "2025-10-29T06:58:11.372Z",
+        "slug": "avatar-the-way-of-water",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec34a0",
+        "title": "Doctor Strange in the Multiverse of Madness",
+        "originalTitle": "Doctor Strange in the Multiverse of Madness",
+        "description": "Doctor Strange teams up with a mysterious teenage girl from his dreams who can travel across multiverses, to battle multiple threats, including other-universe versions of himself, which threaten to wipe out millions across the multiverse.",
+        "releaseYear": 2022,
+        "duration": 126,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Sam Raimi",
+        "cast": [
+          {
+            "name": "Benedict Cumberbatch",
+            "character": "Doctor Strange",
+            "_id": "6901ae47dae8210b69ec34a1"
+          },
+          {
+            "name": "Elizabeth Olsen",
+            "character": "Wanda Maximoff",
+            "_id": "6901ae47dae8210b69ec34a2"
+          },
+          {
+            "name": "Xochitl Gomez",
+            "character": "America Chavez",
+            "_id": "6901ae47dae8210b69ec34a3"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "imdbRating": 6.9,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "1.8GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 2,
+        "downloads": 0,
+        "tags": [
+          "marvel",
+          "multiverse",
+          "magic",
+          "superhero"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.089Z",
+        "updatedAt": "2025-10-29T07:11:24.660Z",
+        "slug": "doctor-strange-in-the-multiverse-of-madness",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec34a8",
+        "title": "Thor: Love and Thunder",
+        "originalTitle": "Thor: Love and Thunder",
+        "description": "Thor enlists the help of Valkyrie, Korg and ex-girlfriend Jane Foster to fight Gorr the God Butcher, who intends to make the gods extinct.",
+        "releaseYear": 2022,
+        "duration": 119,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Taika Waititi",
+        "cast": [
+          {
+            "name": "Chris Hemsworth",
+            "character": "Thor",
+            "_id": "6901ae47dae8210b69ec34a9"
+          },
+          {
+            "name": "Natalie Portman",
+            "character": "Jane Foster / Mighty Thor",
+            "_id": "6901ae47dae8210b69ec34aa"
+          },
+          {
+            "name": "Christian Bale",
+            "character": "Gorr the God Butcher",
+            "_id": "6901ae47dae8210b69ec34ab"
+          }
+        ],
+        "poster": "https://movielinkbd.to/images/shakib_load.svg",
+        "backdrop": "https://movielinkbd.to/images/shakib_load.svg",
+        "imdbRating": 6.2,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "1.7GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "marvel",
+          "thor",
+          "comedy",
+          "superhero"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.093Z",
+        "updatedAt": "2025-10-29T06:58:16.333Z",
+        "slug": "thor-love-and-thunder",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec34af",
+        "title": "Minions: The Rise of Gru",
+        "originalTitle": "Minions: The Rise of Gru",
+        "description": "The untold story of one twelve-year-old's dream to become the world's greatest supervillain.",
+        "releaseYear": 2022,
+        "duration": 87,
+        "genres": [
+          "Animation",
+          "Adventure",
+          "Comedy"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Kyle Balda",
+        "cast": [
+          {
+            "name": "Steve Carell",
+            "character": "Gru",
+            "_id": "6901ae47dae8210b69ec34b0"
+          },
+          {
+            "name": "Pierre Coffin",
+            "character": "Minions",
+            "_id": "6901ae47dae8210b69ec34b1"
+          },
+          {
+            "name": "Alan Arkin",
+            "character": "Wild Knuckles",
+            "_id": "6901ae47dae8210b69ec34b2"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/jCk0u2h1XlBySSktxkJ6GwjLXJ0.jpg",
+        "imdbRating": 6.5,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "1.2GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 0,
+        "downloads": 0,
+        "tags": [
+          "animation",
+          "family",
+          "comedy",
+          "minions"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.096Z",
+        "updatedAt": "2025-10-29T06:58:17.426Z",
+        "slug": "minions-the-rise-of-gru",
+        "__v": 0
+      },
+      {
+        "_id": "6901ae47dae8210b69ec34b5",
+        "title": "Jurassic World Dominion",
+        "originalTitle": "Jurassic World Dominion",
+        "description": "Four years after the destruction of Isla Nublar, dinosaurs now live and hunt alongside humans all over the world. This fragile balance will reshape the future and determine, once and for all, whether human beings are to remain the apex predators on a planet they now share with history's most fearsome creatures.",
+        "releaseYear": 2022,
+        "duration": 147,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Sci-Fi"
+        ],
+        "languages": [
+          "English",
+          "Hindi"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Colin Trevorrow",
+        "cast": [
+          {
+            "name": "Chris Pratt",
+            "character": "Owen Grady",
+            "_id": "6901ae47dae8210b69ec34b6"
+          },
+          {
+            "name": "Bryce Dallas Howard",
+            "character": "Claire Dearing",
+            "_id": "6901ae47dae8210b69ec34b7"
+          },
+          {
+            "name": "Laura Dern",
+            "character": "Dr. Ellie Sattler",
+            "_id": "6901ae47dae8210b69ec34b8"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "imdbRating": 5.6,
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY",
+          "WEBDL"
+        ],
+        "size": "2.0GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 3,
+        "downloads": 0,
+        "tags": [
+          "dinosaurs",
+          "jurassic",
+          "adventure",
+          "sci-fi"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:03:51.099Z",
+        "updatedAt": "2025-10-29T07:42:44.821Z",
+        "slug": "jurassic-world-dominion",
+        "__v": 0
+      },
+      {
+        "_id": "6901b0cb8d4cb03a6e3a32bc",
+        "title": "Inception",
+        "description": "A thief who steals corporate secrets through the use of dream-sharing technology.",
+        "releaseYear": 2010,
+        "duration": 148,
+        "genres": [
+          "Action",
+          "Sci-Fi",
+          "Thriller"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Christopher Nolan",
+        "cast": [
+          {
+            "name": "Leonardo DiCaprio",
+            "character": "Dom Cobb",
+            "_id": "6901b0cb8d4cb03a6e3a32bd"
+          },
+          {
+            "name": "Marion Cotillard",
+            "character": "Mal",
+            "_id": "6901b0cb8d4cb03a6e3a32be"
+          },
+          {
+            "name": "Tom Hardy",
+            "character": "Eames",
+            "_id": "6901b0cb8d4cb03a6e3a32bf"
+          }
+        ],
+        "poster": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "backdrop": "https://image.tmdb.org/t/p/w500/LC9g7oNJc3jZNXUU8CkwSzVK2w.jpg",
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "WEBRIP",
+          "BLURAY"
+        ],
+        "size": "2.1 GB",
+        "status": "published",
+        "featured": true,
+        "trending": false,
+        "views": 26,
+        "downloads": 0,
+        "tags": [
+          "mind-bending",
+          "dreams",
+          "heist"
+        ],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:14:35.477Z",
+        "updatedAt": "2025-10-29T09:37:43.224Z",
+        "slug": "inception",
+        "__v": 0
+      },
+      {
+        "_id": "6901b5361e64fe224b0dc58a",
+        "title": "Working Test Movie",
+        "description": "Testing with valid quality v",
+        "releaseYear": 2023,
+        "duration": 12000,
+        "genres": [
+          "Action"
+        ],
+        "languages": [
+          "English"
+        ],
+        "countries": [
+          "USA"
+        ],
+        "director": "Test Director",
+        "cast": [
+          {
+            "name": "Test Actor",
+            "_id": "6901c4f4f9a99dbbc113ec8f"
+          }
+        ],
+        "poster": "https://fojik.site/wp-content/uploads/7JS7y9Q6t69oEXg9kRNtasDwm8O-185x278.jpg",
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "quality": [
+          "BLURAY"
+        ],
+        "size": "1.5GB",
+        "status": "published",
+        "featured": false,
+        "trending": false,
+        "views": 2,
+        "downloads": 0,
+        "tags": [],
+        "createdBy": "69017fad1f97e419857fc766",
+        "createdAt": "2025-10-29T06:33:26.377Z",
+        "updatedAt": "2025-10-29T07:40:49.380Z",
+        "slug": "working-test-movie",
+        "backdrop": "https://fojik.site/wp-content/uploads/7JS7y9Q6t69oEXg9kRNtasDwm8O-185x278.jpg",
+        "__v": 0,
+        "imdbRating": 0,
+        "trailer": ""
+      }
+    ]
+  }
+}

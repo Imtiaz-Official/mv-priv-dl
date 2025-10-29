@@ -22,6 +22,7 @@ const userRoutes = require('./routes/users');
 const trackerRoutes = require('./routes/tracker');
 const moderationRoutes = require('./routes/moderation');
 const analyticsRoutes = require('./routes/analytics');
+const systemRoutes = require('./routes/system');
 
 // Import movie tracker service
 const movieTracker = require('./services/movieTracker');
@@ -90,6 +91,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/tracker', trackerRoutes);
 app.use('/api/moderation', moderationRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/system', systemRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
