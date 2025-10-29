@@ -96,7 +96,7 @@ const MovieDownloadManager = ({ movieId, movieTitle, onClose }) => {
   const sizeUnits = ['MB', 'GB', 'TB'];
   const providerOptions = [
     'Google Drive', 'Mega', 'MediaFire', 'Dropbox', 'OneDrive',
-    'WeTransfer', 'SendSpace', 'Zippyshare', 'Rapidgator', 'Uploaded'
+    'Torrent', 'Direct Link', 'Zippyshare', 'Uploaded', 'Rapidgator'
   ];
 
   useEffect(() => {

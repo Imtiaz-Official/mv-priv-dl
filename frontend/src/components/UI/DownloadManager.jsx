@@ -333,7 +333,7 @@ const DownloadManager = ({ open, onClose }) => {
                       }
                       secondary={
                         <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                          {download.quality} • {download.format} • {download.size}
+                          {download.quality} • {download.format} • {typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || 'N/A'}
                           {download.startTime && ` • Started: ${formatTime(download.startTime)}`}
                           {download.error && (
                             <Box component="span" sx={{ color: '#f44336', ml: 1 }}>

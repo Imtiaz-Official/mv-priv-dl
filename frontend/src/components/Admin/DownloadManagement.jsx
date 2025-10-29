@@ -430,7 +430,7 @@ const DownloadManagement = () => {
                   />
                 </TableCell>
                 <TableCell>{download.format}</TableCell>
-                <TableCell>{download.size}</TableCell>
+                <TableCell>{typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || 'N/A'}</TableCell>
                 <TableCell>{(download.downloadCount || 0).toLocaleString()}</TableCell>
                 <TableCell>
                   <Chip

@@ -148,7 +148,31 @@ const DownloadCard = ({ download, onDownload }) => {
   };
 
   const formatFileSize = (size) => {
-    return `${size.value} ${size.unit}`;
+    if (!size) return 'N/A';
+    
+    // If size is already a string, return it
+    if (typeof size === 'string') return size;
+    
+    // If size is an object with value and unit
+    if (size && typeof size === 'object' && size.value !== undefined && size.unit !== undefined) {
+      return `${size.value} ${size.unit}`;
+    }
+    
+    // If size is just a number, assume it's in bytes and convert
+    if (typeof size === 'number') {
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let unitIndex = 0;
+      let sizeValue = size;
+      
+      while (sizeValue >= 1024 && unitIndex < units.length - 1) {
+        sizeValue /= 1024;
+        unitIndex++;
+      }
+      
+      return `${sizeValue.toFixed(1)} ${units[unitIndex]}`;
+    }
+    
+    return 'N/A';
   };
 
   const getProviderColor = (provider) => {

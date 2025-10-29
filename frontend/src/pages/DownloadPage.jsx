@@ -185,7 +185,12 @@ const DownloadPage = () => {
         if (downloadsResponse.ok) {
           const downloadsData = await downloadsResponse.json();
           if (downloadsData.success) {
-            setDownloads(downloadsData.data.downloads);
+            // Flatten the grouped downloads into a single array
+            const allDownloads = [];
+            Object.values(downloadsData.data.downloads).forEach(qualityGroup => {
+              allDownloads.push(...qualityGroup);
+            });
+            setDownloads(allDownloads);
           }
         }
       } catch (error) {
@@ -209,10 +214,51 @@ const DownloadPage = () => {
     }
   }, [countdown, downloadReady]);
 
-  const handleDownloadClick = (download) => {
-    setSelectedDownload(download);
-    // In a real app, this would trigger the actual download
-    window.open(download.url, '_blank');
+  const handleDownloadClick = async (download) => {
+    try {
+      setSelectedDownload(download);
+      
+      // Track the download in the database
+      if (download._id || download.id) {
+        const downloadId = download._id || download.id;
+        const response = await fetch(`http://localhost:5000/api/downloads/${downloadId}/track`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Download tracked successfully:', data);
+        } else {
+          console.error('Failed to track download');
+        }
+      }
+      
+      // Open the download link
+      if (download.downloadLinks && download.downloadLinks.length > 0) {
+        // Use the first active download link
+        const activeLink = download.downloadLinks.find(link => link.isActive);
+        if (activeLink) {
+          window.open(activeLink.url, '_blank');
+        }
+      } else if (download.url) {
+        // Fallback for legacy format
+        window.open(download.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error handling download:', error);
+      // Still open the download link even if tracking fails
+      if (download.downloadLinks && download.downloadLinks.length > 0) {
+        const activeLink = download.downloadLinks.find(link => link.isActive);
+        if (activeLink) {
+          window.open(activeLink.url, '_blank');
+        }
+      } else if (download.url) {
+        window.open(download.url, '_blank');
+      }
+    }
   };
 
   const handleBackClick = () => {
@@ -367,14 +413,14 @@ const DownloadPage = () => {
                                   {download.quality || 'HD'} Quality
                                 </Typography>
                                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                  {download.format || 'MP4'} • {download.size || '1.2 GB'}
+                                  {download.format || 'MP4'} • {typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'}
                                 </Typography>
                               </Box>
                             </Box>
                             
                             <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                               <QualityChip label={download.quality || 'HD'} size="small" />
-                              <SizeChip label={download.size || '1.2 GB'} size="small" />
+                              <SizeChip label={typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'} size="small" />
                               <Chip 
                                 label={download.format || 'MP4'} 
                                 size="small" 

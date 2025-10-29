@@ -338,7 +338,7 @@ const Profile = () => {
                         variant="outlined"
                       />
                       <Chip
-                        label={download.size}
+                        label={typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || 'N/A'}
                         size="small"
                         variant="outlined"
                       />
