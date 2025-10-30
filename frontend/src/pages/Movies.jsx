@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Box,
@@ -57,11 +57,28 @@ import Button from '../components/UI/Button';
 import { SectionLoader } from '../components/UI/LoadingSpinner';
 
 const FilterCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.05)',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: 16,
+  background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
+  borderRadius: 20,
   marginBottom: theme.spacing(2),
+  position: 'relative',
+  overflow: 'hidden',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+    border: '1px solid rgba(255, 255, 255, 0.25)',
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+  },
 }));
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
@@ -74,19 +91,29 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
   '& .MuiAccordionSummary-root': {
     padding: theme.spacing(2),
     minHeight: 'auto',
+    borderRadius: 16,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      background: 'rgba(255, 255, 255, 0.05)',
+    },
     '& .MuiAccordionSummary-content': {
       margin: 0,
     },
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      '&.Mui-expanded': {
+        transform: 'rotate(180deg)',
+      },
+    },
   },
   '& .MuiAccordionDetails-root': {
-    padding: theme.spacing(0, 2, 2),
+    padding: theme.spacing(0, 3, 3),
   },
 }));
 
 const Movies = () => {
   const location = useLocation();
   const [movies, setMovies] = useState([]);
-  const [filteredMovies, setFilteredMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -96,7 +123,7 @@ const Movies = () => {
   const [filters, setFilters] = useState({
     genre: '',
     year: [2000, 2024],
-    rating: [0, 10],
+    rating: [5, 10],
     quality: '',
     sortBy: 'popularity',
   });
@@ -194,24 +221,23 @@ const Movies = () => {
             id: movie._id,
             title: movie.title,
             poster: movie.poster || '/placeholder-movie.svg',
-            rating: movie.rating?.average || 0,
+            rating: movie.imdbRating || movie.rating?.average || 0,
             year: movie.releaseYear,
             duration: movie.duration,
             views: movie.views || 0,
-            quality: movie.quality?.[0] || 'HD',
-            genres: movie.genres || [],
+            quality: (movie.quality && typeof movie.quality === 'string') ? movie.quality.split(' ')[0] : 'HD', // Take first quality from string
+            genres: typeof movie.genres === 'string' ? movie.genres.split(' ') : (movie.genres || []),
             description: movie.description || movie.plot || '',
           }));
           setMovies(moviesData);
-          setFilteredMovies(moviesData);
         } else {
           // Fallback to mock data if API fails
           const mockMovies = Array.from({ length: 50 }, (_, index) => ({
             id: index + 1,
             title: `Movie ${index + 1}`,
             poster: `/placeholder-movie.svg`,
-            rating: Math.floor(Math.random() * 5) + 5,
-            year: Math.floor(Math.random() * 24) + 2000,
+            rating: Math.round((Math.random() * 5 + 5) * 10) / 10, // 5.0 to 10.0 with 1 decimal
+            year: Math.floor(Math.random() * 25) + 2000, // 2000 to 2024
             duration: Math.floor(Math.random() * 60) + 90,
             views: Math.floor(Math.random() * 1000000) + 100000,
             quality: qualities[Math.floor(Math.random() * qualities.length)],
@@ -219,7 +245,6 @@ const Movies = () => {
             description: `This is the description for Movie ${index + 1}. It's an amazing film with great storyline and excellent performances.`,
           }));
           setMovies(mockMovies);
-          setFilteredMovies(mockMovies);
         }
       } catch (error) {
         console.error('Error fetching movies:', error);
@@ -228,8 +253,8 @@ const Movies = () => {
           id: index + 1,
           title: `Movie ${index + 1}`,
           poster: `/placeholder-movie.svg`,
-          rating: Math.floor(Math.random() * 5) + 5,
-          year: Math.floor(Math.random() * 24) + 2000,
+          rating: Math.round((Math.random() * 5 + 5) * 10) / 10, // 5.0 to 10.0 with 1 decimal
+          year: Math.floor(Math.random() * 25) + 2000, // 2000 to 2024
           duration: Math.floor(Math.random() * 60) + 90,
           views: Math.floor(Math.random() * 1000000) + 100000,
           quality: qualities[Math.floor(Math.random() * qualities.length)],
@@ -237,7 +262,6 @@ const Movies = () => {
           description: `This is the description for Movie ${index + 1}. It's an amazing film with great storyline and excellent performances.`,
         }));
         setMovies(mockMovies);
-        setFilteredMovies(mockMovies);
       } finally {
         setLoading(false);
       }
@@ -288,8 +312,8 @@ const Movies = () => {
     localStorage.setItem('movieSearchHistory', JSON.stringify(newHistory));
   };
 
-  // Filter and search logic
-  useEffect(() => {
+  // Filter and search logic with useMemo for better performance
+  const filteredMovies = useMemo(() => {
     let filtered = movies.filter(movie => {
       const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesGenre = !filters.genre || movie.genres.includes(filters.genre);
@@ -326,22 +350,34 @@ const Movies = () => {
       }
     });
 
-    setFilteredMovies(filtered);
-    setCurrentPage(1);
-  }, [movies, searchQuery, filters.genre, filters.year[0], filters.year[1], filters.rating[0], filters.rating[1], filters.quality, filters.sortBy, contentType]);
+    return filtered;
+  }, [movies, searchQuery, filters, contentType]);
 
-  const handleFilterChange = (filterType, value) => {
+  // Update current page when filtered movies change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredMovies]);
+
+  const handleFilterChange = useCallback((filterType, value) => {
     setFilters(prev => ({
       ...prev,
-      [filterType]: value,
+      [filterType]: value
     }));
-  };
+  }, []);
+
+  // Debounced filter change for sliders to improve performance
+  const handleSliderChange = useCallback((filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  }, []);
 
   const clearFilters = () => {
     setFilters({
       genre: '',
       year: [2000, 2024],
-      rating: [0, 10],
+      rating: [5, 10],
       quality: '',
       sortBy: 'popularity',
     });
@@ -357,12 +393,38 @@ const Movies = () => {
 
   const FilterContent = () => (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 3,
+        pb: 2,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+      }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            color: 'white', 
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.02em'
+          }}
+        >
           Filters
         </Typography>
         {isMobile && (
-          <IconButton onClick={() => setMobileFilterOpen(false)} sx={{ color: 'white' }}>
+          <IconButton 
+            onClick={() => setMobileFilterOpen(false)} 
+            sx={{ 
+              color: 'white',
+              background: 'rgba(255, 255, 255, 0.1)',
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.2)',
+              }
+            }}
+          >
             <CloseIcon />
           </IconButton>
         )}
@@ -370,28 +432,67 @@ const Movies = () => {
 
       <FilterCard>
         <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CategoryIcon sx={{ color: theme.palette.primary.main }} />
-              <Typography sx={{ color: 'white', fontWeight: 600 }}>Genre</Typography>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '50%',
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <CategoryIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
+              </Box>
+              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Genre</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl fullWidth>
-              <InputLabel sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Select Genre</InputLabel>
+              <InputLabel sx={{ 
+                color: 'rgba(255, 255, 255, 0.7)',
+                '&.Mui-focused': {
+                  color: '#667eea'
+                }
+              }}>Select Genre</InputLabel>
               <Select
                 value={filters.genre}
                 onChange={(e) => handleFilterChange('genre', e.target.value)}
                 sx={{
                   color: 'white',
+                  borderRadius: 2,
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: '1px',
                   },
                   '&:hover .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'rgba(255, 255, 255, 0.4)',
                   },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.palette.primary.main,
+                    borderColor: '#667eea',
+                    borderWidth: '2px',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: '#667eea',
+                  },
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      background: 'rgba(30, 30, 30, 0.95)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: 2,
+                      '& .MuiMenuItem-root': {
+                        color: 'white',
+                        '&:hover': {
+                          background: 'rgba(102, 126, 234, 0.2)',
+                        },
+                        '&.Mui-selected': {
+                          background: 'rgba(102, 126, 234, 0.3)',
+                        },
+                      },
+                    },
                   },
                 }}
               >
@@ -407,93 +508,185 @@ const Movies = () => {
 
       <FilterCard>
         <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CalendarIcon sx={{ color: theme.palette.primary.main }} />
-              <Typography sx={{ color: 'white', fontWeight: 600 }}>Release Year</Typography>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '50%',
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <CalendarIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
+              </Box>
+              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Release Year</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
-              {filters.year[0]} - {filters.year[1]}
-            </Typography>
-            <Slider
-              value={filters.year}
-              onChange={(e, value) => handleFilterChange('year', value)}
-              valueLabelDisplay="auto"
-              min={1990}
-              max={2024}
-              sx={{
-                color: theme.palette.primary.main,
-                '& .MuiSlider-thumb': {
-                  backgroundColor: theme.palette.primary.main,
-                },
-                '& .MuiSlider-track': {
-                  backgroundColor: theme.palette.primary.main,
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                },
-              }}
-            />
+            <Box sx={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: 2,
+              p: 2,
+              mb: 2,
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <Typography variant="body2" sx={{ 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                mb: 2,
+                textAlign: 'center',
+                fontWeight: 500
+              }}>
+                {filters.year[0]} - {filters.year[1]}
+              </Typography>
+              <Slider
+                value={filters.year}
+                onChange={(e, value) => handleSliderChange('year', value)}
+                valueLabelDisplay="auto"
+                min={2000}
+                max={2024}
+                sx={{
+                  color: '#667eea',
+                  height: 6,
+                  '& .MuiSlider-thumb': {
+                    backgroundColor: '#667eea',
+                    border: '3px solid white',
+                    width: 20,
+                    height: 20,
+                    '&:hover': {
+                      boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                    },
+                  },
+                  '& .MuiSlider-track': {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                  },
+                  '& .MuiSlider-rail': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                  '& .MuiSlider-valueLabel': {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: 1,
+                  },
+                }}
+              />
+            </Box>
           </AccordionDetails>
         </StyledAccordion>
       </FilterCard>
 
       <FilterCard>
         <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <StarIcon sx={{ color: theme.palette.primary.main }} />
-              <Typography sx={{ color: 'white', fontWeight: 600 }}>Rating</Typography>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '50%',
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <StarIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
+              </Box>
+              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Rating</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
-              {filters.rating[0]} - {filters.rating[1]} stars
-            </Typography>
-            <Slider
-              value={filters.rating}
-              onChange={(e, value) => handleFilterChange('rating', value)}
-              valueLabelDisplay="auto"
-              min={0}
-              max={10}
-              step={0.1}
-              sx={{
-                color: theme.palette.primary.main,
-                '& .MuiSlider-thumb': {
-                  backgroundColor: theme.palette.primary.main,
-                },
-                '& .MuiSlider-track': {
-                  backgroundColor: theme.palette.primary.main,
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                },
-              }}
-            />
+            <Box sx={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: 2,
+              p: 2,
+              mb: 2,
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <Typography variant="body2" sx={{ 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                mb: 2,
+                textAlign: 'center',
+                fontWeight: 500
+              }}>
+                {filters.rating[0]} - {filters.rating[1]} stars
+              </Typography>
+              <Slider
+                value={filters.rating}
+                onChange={(e, value) => handleSliderChange('rating', value)}
+                valueLabelDisplay="auto"
+                min={5}
+                max={10}
+                step={0.1}
+                sx={{
+                  color: '#667eea',
+                  height: 6,
+                  '& .MuiSlider-thumb': {
+                    backgroundColor: '#667eea',
+                    border: '3px solid white',
+                    width: 20,
+                    height: 20,
+                    '&:hover': {
+                      boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                    },
+                  },
+                  '& .MuiSlider-track': {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                  },
+                  '& .MuiSlider-rail': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                  '& .MuiSlider-valueLabel': {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: 1,
+                  },
+                }}
+              />
+            </Box>
           </AccordionDetails>
         </StyledAccordion>
       </FilterCard>
 
       <FilterCard>
         <StyledAccordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <MovieIcon sx={{ color: theme.palette.primary.main }} />
-              <Typography sx={{ color: 'white', fontWeight: 600 }}>Quality</Typography>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '50%',
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <MovieIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
+              </Box>
+              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Quality</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
               <Chip
                 label="All"
                 onClick={() => handleFilterChange('quality', '')}
                 variant={filters.quality === '' ? 'filled' : 'outlined'}
                 sx={{
-                  color: filters.quality === '' ? 'white' : 'rgba(255, 255, 255, 0.7)',
-                  backgroundColor: filters.quality === '' ? theme.palette.primary.main : 'transparent',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
+                  color: filters.quality === '' ? 'white' : 'rgba(255, 255, 255, 0.8)',
+                  background: filters.quality === '' 
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                    : 'rgba(255, 255, 255, 0.05)',
+                  borderColor: filters.quality === '' ? 'transparent' : 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: 3,
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  height: 36,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                    background: filters.quality === '' 
+                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                      : 'rgba(102, 126, 234, 0.2)',
+                    borderColor: '#667eea',
+                  },
                 }}
               />
               {qualities.map(quality => (
@@ -503,9 +696,24 @@ const Movies = () => {
                   onClick={() => handleFilterChange('quality', quality)}
                   variant={filters.quality === quality ? 'filled' : 'outlined'}
                   sx={{
-                    color: filters.quality === quality ? 'white' : 'rgba(255, 255, 255, 0.7)',
-                    backgroundColor: filters.quality === quality ? theme.palette.primary.main : 'transparent',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    color: filters.quality === quality ? 'white' : 'rgba(255, 255, 255, 0.8)',
+                    background: filters.quality === quality 
+                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                      : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: filters.quality === quality ? 'transparent' : 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 3,
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    height: 36,
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                      background: filters.quality === quality 
+                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                        : 'rgba(102, 126, 234, 0.2)',
+                      borderColor: '#667eea',
+                    },
                   }}
                 />
               ))}
@@ -514,14 +722,33 @@ const Movies = () => {
         </StyledAccordion>
       </FilterCard>
 
-      <Button
-        variant="outlined"
-        fullWidth
-        onClick={clearFilters}
-        sx={{ mt: 2 }}
-      >
-        Clear All Filters
-      </Button>
+      <Box sx={{ mt: 3 }}>
+        <Button
+          variant="outlined"
+          fullWidth
+          onClick={clearFilters}
+          sx={{ 
+            mt: 2,
+            borderRadius: 3,
+            height: 48,
+            fontSize: '1rem',
+            fontWeight: 600,
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'rgba(255, 255, 255, 0.3)',
+            color: 'white',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              background: 'rgba(255, 69, 58, 0.1)',
+              borderColor: '#ff453a',
+              color: '#ff453a',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(255, 69, 58, 0.2)',
+            }
+          }}
+        >
+          Clear All Filters
+        </Button>
+      </Box>
     </Box>
   );
 
@@ -769,6 +996,8 @@ const Movies = () => {
                           </Avatar>
                         </ListItemAvatar>
                         <ListItemText
+                          primaryTypographyProps={{ component: 'div' }}
+                          secondaryTypographyProps={{ component: 'div' }}
                           primary={
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
                               <Typography
