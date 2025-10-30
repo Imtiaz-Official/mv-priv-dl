@@ -34,6 +34,7 @@ const WatchlistButton = ({
   size = 'medium',
   showText = true,
   onWatchlistChange,
+  sx = {},
 }) => {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -121,15 +122,18 @@ const WatchlistButton = ({
             onClick={toggleWatchlist}
             disabled={loading}
             sx={{
-              color: isInWatchlist ? '#f50057' : 'rgba(255, 255, 255, 0.7)',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              color: isInWatchlist ? '#f50057' : 'rgba(255, 255, 255, 0.8)',
+              backgroundColor: isInWatchlist ? 'rgba(245, 0, 87, 0.15)' : 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease',
+              border: `1px solid ${isInWatchlist ? 'rgba(245, 0, 87, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.2s ease',
               '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                backgroundColor: isInWatchlist ? 'rgba(245, 0, 87, 0.25)' : 'rgba(255, 255, 255, 0.15)',
                 color: isInWatchlist ? '#f50057' : 'white',
-                transform: 'scale(1.05)',
+                transform: 'translateY(-1px) scale(1.02)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                borderColor: isInWatchlist ? 'rgba(245, 0, 87, 0.5)' : 'rgba(255, 255, 255, 0.3)',
               },
               '&:disabled': {
                 opacity: 0.6,
@@ -181,17 +185,23 @@ const WatchlistButton = ({
           )
         }
         sx={{
-          backgroundColor: isInWatchlist ? '#f50057' : 'transparent',
-          borderColor: isInWatchlist ? '#f50057' : 'rgba(255, 255, 255, 0.3)',
+          backgroundColor: isInWatchlist ? 'linear-gradient(135deg, #f50057 0%, #c51162 100%)' : 'transparent',
+          borderColor: isInWatchlist ? '#f50057' : 'rgba(255, 255, 255, 0.25)',
           color: isInWatchlist ? 'white' : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: isInWatchlist ? '0 2px 8px rgba(245, 0, 87, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.1)',
           '&:hover': {
-            backgroundColor: isInWatchlist ? '#c51162' : 'rgba(245, 0, 87, 0.1)',
+            backgroundColor: isInWatchlist ? 'linear-gradient(135deg, #c51162 0%, #ad1457 100%)' : 'rgba(245, 0, 87, 0.08)',
             borderColor: '#f50057',
             color: isInWatchlist ? 'white' : '#f50057',
+            boxShadow: isInWatchlist ? '0 4px 12px rgba(245, 0, 87, 0.35)' : '0 4px 12px rgba(245, 0, 87, 0.15)',
+            transform: 'translateY(-1px)',
           },
           '&:disabled': {
             opacity: 0.6,
           },
+          transition: 'all 0.2s ease',
+          ...sx, // Merge custom sx props
         }}
       >
         {showText && (isInWatchlist ? 'In Watchlist' : 'Add to Watchlist')}

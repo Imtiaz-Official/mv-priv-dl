@@ -376,9 +376,10 @@ const MovieDetail = () => {
 
   return (
     <Box>
-      {/* Hero Section */}
+      {/* Hero Section - Hidden on Mobile */}
       <HeroSection
         sx={{
+          display: { xs: 'none', md: 'block' }, // Hide on mobile, show on desktop
           '&::before': {
             backgroundImage: `url(${movie.backdrop})`,
           },
@@ -520,6 +521,175 @@ const MovieDetail = () => {
           </Fade>
         </Container>
       </HeroSection>
+
+      {/* Mobile Movie Details Section */}
+      {isMobile && (
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+          py: 3,
+          px: 2,
+        }}>
+          <Container maxWidth="sm">
+            <Card sx={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: 3,
+              overflow: 'hidden',
+            }}>
+              <Box sx={{ p: 3 }}>
+                {/* Movie Title */}
+                <Typography 
+                  variant="h4" 
+                  sx={{ 
+                    color: 'white', 
+                    fontWeight: 700, 
+                    mb: 2,
+                    textAlign: 'center'
+                  }}
+                >
+                  {movie.title}
+                </Typography>
+
+                {/* Movie Stats */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-around', 
+                  mb: 3,
+                  py: 2,
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  borderRadius: 2,
+                }}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 0.5 }}>
+                      <StarIcon sx={{ color: '#ffd700', fontSize: 18 }} />
+                      <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                        {movie.rating}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                      Rating
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 0.5 }}>
+                      <CalendarIcon sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 18 }} />
+                      <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                        {movie.year}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                      Year
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 0.5 }}>
+                      <ClockIcon sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 18 }} />
+                      <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                        {formatDuration(movie.duration)}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                      Duration
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Genres */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3, justifyContent: 'center' }}>
+                  {movie.genres.slice(0, 3).map((genre, index) => (
+                    <Chip
+                      key={index}
+                      label={genre}
+                      size="small"
+                      sx={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: 'white',
+                        fontSize: '0.75rem',
+                      }}
+                    />
+                  ))}
+                  <Chip
+                    label={movie.quality}
+                    size="small"
+                    sx={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                    }}
+                  />
+                </Box>
+
+                {/* Description */}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    lineHeight: 1.6,
+                    mb: 3,
+                    textAlign: 'center',
+                  }}
+                >
+                  {movie.plot.length > 150 ? `${movie.plot.substring(0, 150)}...` : movie.plot}
+                </Typography>
+
+                {/* Green Download Button */}
+                <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    component={Link}
+                    to={`/download/${movie.id}`}
+                    sx={{
+                      background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+                      color: 'white',
+                      fontWeight: 600,
+                      py: 1,
+                      px: 2.5,
+                      borderRadius: 2.5,
+                      fontSize: '0.875rem',
+                      minWidth: 'auto',
+                      boxShadow: '0 3px 12px rgba(76, 175, 80, 0.25)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                        boxShadow: '0 4px 16px rgba(76, 175, 80, 0.35)',
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.2s ease',
+                    }}
+                    startIcon={<PlayIcon sx={{ fontSize: '1rem' }} />}
+                  >
+                    Download
+                  </Button>
+                  
+                  <WatchlistButton 
+                    movieId={movie.id} 
+                    variant="button" 
+                    size="medium"
+                    showText={false}
+                    sx={{
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      color: 'white',
+                      py: 1,
+                      px: 2.5,
+                      borderRadius: 2.5,
+                      fontSize: '0.875rem',
+                      minWidth: 'auto',
+                      '&:hover': {
+                        borderColor: 'white',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Card>
+          </Container>
+        </Box>
+      )}
 
       {/* Content Section */}
       <Container maxWidth="lg" sx={{ py: 6 }}>

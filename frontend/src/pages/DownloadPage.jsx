@@ -185,7 +185,31 @@ const DownloadPage = () => {
         if (movieResponse.ok) {
           const movieData = await movieResponse.json();
           if (movieData.success) {
-            setMovie(movieData.data);
+            const movieInfo = movieData.data.movie; // Fix: Access movie from data.movie
+            setMovie({
+              id: movieInfo._id,
+              title: movieInfo.title,
+              poster: movieInfo.poster || '/placeholder-movie.svg',
+              backdrop: movieInfo.backdrop || '/placeholder-backdrop.svg',
+              rating: movieInfo.rating?.average || 0,
+              year: movieInfo.releaseYear,
+              duration: movieInfo.duration,
+              views: movieInfo.views || 0,
+              quality: movieInfo.quality?.[0] || 'HD',
+              genres: movieInfo.genres || [],
+              language: movieInfo.languages?.[0] || 'English',
+              country: movieInfo.countries?.[0] || 'Unknown',
+              director: movieInfo.director || 'Unknown',
+              cast: movieInfo.cast || [],
+              plot: movieInfo.description || movieInfo.plot || 'No description available.',
+              trailer: movieInfo.trailer || '',
+              downloadLinks: movieInfo.downloadLinks || [],
+              ratings: {
+                imdb: movieInfo.imdbRating || movieInfo.rating?.average || 0,
+                rotten: movieInfo.rating?.rotten || 0,
+                metacritic: movieInfo.rating?.metacritic || 0,
+              },
+            });
           }
         }
 
@@ -349,11 +373,11 @@ const DownloadPage = () => {
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                       <Chip label={movie.year} size="small" sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }} />
-                      <Chip label={movie.genre?.split(',')[0]} size="small" sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }} />
-                      <QualityChip label="HD" size="small" />
+                      <Chip label={movie.genres?.[0] || 'Unknown'} size="small" sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }} />
+                      <QualityChip label={movie.quality || 'HD'} size="small" />
                     </Box>
                     <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                      {movie.description?.substring(0, 150)}...
+                      {movie.plot?.substring(0, 150)}...
                     </Typography>
                   </Grid>
                 </Grid>
