@@ -41,7 +41,18 @@ import {
   HighQuality as QualityIcon,
   Language as LanguageIcon,
   Verified as VerifiedIcon,
-  Shield as ShieldIcon
+  Shield as ShieldIcon,
+  Share as ShareIcon,
+  Bookmark as BookmarkIcon,
+  History as HistoryIcon,
+  Recommend as RecommendIcon,
+  GetApp as GetAppIcon,
+  FileCopy as FileCopyIcon,
+  WhatsApp as WhatsAppIcon,
+  Telegram as TelegramIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  Check as CheckIcon
 } from '@mui/icons-material';
 
 // Styled Components
@@ -59,6 +70,11 @@ const HeroSection = styled(Box)(({ theme }) => ({
     bottom: 0,
     background: 'radial-gradient(circle at 70% 30%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
     zIndex: 1,
+  },
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    minHeight: 'auto',
+    paddingBottom: theme.spacing(4),
   }
 }));
 
@@ -67,6 +83,13 @@ const ContentWrapper = styled(Container)(({ theme }) => ({
   zIndex: 2,
   paddingTop: theme.spacing(8),
   paddingBottom: theme.spacing(8),
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  }
 }));
 
 const DownloadCard = styled(Card)(({ theme }) => ({
@@ -79,6 +102,18 @@ const DownloadCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-5px)',
     boxShadow: '0 30px 60px rgba(0, 0, 0, 0.6)',
+  },
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 12px 35px rgba(0, 0, 0, 0.4)',
+    },
+    '&:active': {
+      transform: 'scale(0.98)',
+    }
   }
 }));
 
@@ -89,6 +124,12 @@ const InfoCard = styled(Paper)(({ theme }) => ({
   border: '1px solid rgba(255, 255, 255, 0.1)',
   backdropFilter: 'blur(10px)',
   marginBottom: theme.spacing(3),
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    borderRadius: '12px',
+    padding: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  }
 }));
 
 const DownloadButton = styled(Button)(({ theme }) => ({
@@ -109,6 +150,20 @@ const DownloadButton = styled(Button)(({ theme }) => ({
   '&:disabled': {
     background: 'rgba(255, 255, 255, 0.1)',
     color: 'rgba(255, 255, 255, 0.5)',
+  },
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    padding: '14px 24px',
+    fontSize: '1rem',
+    minHeight: '48px',
+    borderRadius: '10px',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
+    },
+    '&:active': {
+      transform: 'scale(0.95)',
+    }
   }
 }));
 
@@ -156,6 +211,82 @@ const CountdownBox = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
+const QuickDownloadButton = styled(Button)(({ theme }) => ({
+  borderRadius: '16px',
+  padding: '20px 40px',
+  fontWeight: 800,
+  textTransform: 'none',
+  fontSize: '1.3rem',
+  background: 'linear-gradient(45deg, #2ed573 0%, #1e90ff 100%)',
+  color: 'white',
+  minHeight: '70px',
+  boxShadow: '0 8px 30px rgba(46, 213, 115, 0.4)',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    background: 'linear-gradient(45deg, #26c765 0%, #1c7ed6 100%)',
+    transform: 'translateY(-3px)',
+    boxShadow: '0 12px 40px rgba(46, 213, 115, 0.6)',
+  },
+  '&:disabled': {
+    background: 'rgba(255, 255, 255, 0.1)',
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    padding: '16px 32px',
+    fontSize: '1.1rem',
+    minHeight: '56px',
+    borderRadius: '12px',
+    width: '100%',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 30px rgba(46, 213, 115, 0.5)',
+    },
+    '&:active': {
+      transform: 'scale(0.98)',
+    }
+  }
+}));
+
+const ShareButton = styled(IconButton)(({ theme, platform }) => ({
+  background: platform === 'whatsapp' ? 'linear-gradient(45deg, #25D366, #128C7E)' :
+              platform === 'telegram' ? 'linear-gradient(45deg, #0088cc, #005577)' :
+              platform === 'facebook' ? 'linear-gradient(45deg, #1877F2, #0d47a1)' :
+              platform === 'twitter' ? 'linear-gradient(45deg, #1DA1F2, #0d47a1)' :
+              platform === 'copy' ? 'linear-gradient(45deg, #667eea, #764ba2)' :
+              'rgba(255, 255, 255, 0.1)',
+  color: 'white',
+  margin: theme.spacing(0.5),
+  width: '48px',
+  height: '48px',
+  borderRadius: '12px',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+  '&:hover': {
+    transform: 'translateY(-2px) scale(1.05)',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+    background: platform === 'whatsapp' ? 'linear-gradient(45deg, #2ee86c, #1aa05e)' :
+                platform === 'telegram' ? 'linear-gradient(45deg, #0099dd, #006688)' :
+                platform === 'facebook' ? 'linear-gradient(45deg, #2988ff, #1e5bb8)' :
+                platform === 'twitter' ? 'linear-gradient(45deg, #2eb1ff, #1e5bb8)' :
+                platform === 'copy' ? 'linear-gradient(45deg, #778bff, #8b5fbf)' :
+                'rgba(255, 255, 255, 0.2)',
+  },
+  '&:active': {
+    transform: 'translateY(0) scale(0.95)',
+  },
+  // Mobile optimizations
+  [theme.breakpoints.down('sm')]: {
+    width: '44px',
+    height: '44px',
+    margin: theme.spacing(0.25),
+    '&:hover': {
+      transform: 'translateY(-1px) scale(1.02)',
+    }
+  }
+}));
+
 const DownloadPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -165,6 +296,7 @@ const DownloadPage = () => {
   const [countdown, setCountdown] = useState(15);
   const [downloadReady, setDownloadReady] = useState(false);
   const [selectedDownload, setSelectedDownload] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -298,6 +430,54 @@ const DownloadPage = () => {
     navigate(`/movie/${id}`);
   };
 
+  const handleShareClick = (platform) => {
+    const url = window.location.href;
+    const title = `Download ${movie?.title || 'Movie'}`;
+    
+    switch (platform) {
+      case 'copy':
+        navigator.clipboard.writeText(url).then(() => {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        }).catch(() => {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = url;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        });
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`);
+        break;
+      case 'telegram':
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`);
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleQuickDownload = () => {
+    if (downloads.length > 0) {
+      // Download the first available option
+      handleDownloadClick(downloads[0]);
+    } else {
+      // Download default HD option
+      handleDownloadClick({ quality: '1080p', size: '2.1 GB', format: 'MP4' });
+    }
+  };
+
   if (loading) {
     return (
       <HeroSection>
@@ -319,15 +499,25 @@ const DownloadPage = () => {
         <Fade in timeout={800}>
           <Box>
             {/* Header */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: { xs: 3, sm: 4 },
+              flexWrap: { xs: 'wrap', sm: 'nowrap' }
+            }}>
               <IconButton
                 onClick={handleBackClick}
                 sx={{
                   background: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
-                  mr: 2,
+                  mr: { xs: 1.5, sm: 2 },
+                  minWidth: { xs: '44px', sm: '48px' },
+                  minHeight: { xs: '44px', sm: '48px' },
                   '&:hover': {
                     background: 'rgba(255, 255, 255, 0.2)',
+                  },
+                  '&:active': {
+                    transform: 'scale(0.95)',
                   }
                 }}
               >
@@ -342,43 +532,341 @@ const DownloadPage = () => {
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
+                  lineHeight: { xs: 1.3, sm: 1.2 },
+                  wordBreak: 'break-word',
                 }}
               >
                 Download {movie?.title}
               </Typography>
             </Box>
 
+            {/* Quick Download Section */}
+            <InfoCard sx={{ textAlign: 'center', mb: { xs: 2, sm: 3 } }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 700, 
+                  mb: { xs: 1.5, sm: 2 },
+                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                }}
+              >
+                Quick Download
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  mb: { xs: 2, sm: 3 },
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  px: { xs: 1, sm: 0 }
+                }}
+              >
+                Start downloading immediately with the best available quality
+              </Typography>
+              <QuickDownloadButton
+                size="large"
+                startIcon={<GetAppIcon />}
+                disabled={!downloadReady}
+                onClick={handleQuickDownload}
+                sx={{ mb: { xs: 1.5, sm: 2 } }}
+              >
+                {downloadReady ? 'Quick Download HD' : `Quick Download in ${countdown}s`}
+              </QuickDownloadButton>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                }}
+              >
+                Or choose specific quality below
+              </Typography>
+            </InfoCard>
+
             {/* Movie Info Card */}
             {movie && (
-              <InfoCard>
-                <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} sm={3}>
+              <InfoCard sx={{ 
+                p: { xs: 2, sm: 3, md: 4 },
+                mb: { xs: 2, sm: 3 }
+              }}>
+                <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} alignItems="center">
+                  <Grid item xs={12} sm={4} md={3}>
                     <Box
-                      component="img"
-                      src={movie.poster || '/placeholder-movie.svg'}
-                      alt={movie.title}
                       sx={{
+                        position: 'relative',
                         width: '100%',
-                        maxWidth: '150px',
-                        height: 'auto',
-                        borderRadius: '12px',
+                        maxWidth: { 
+                          xs: '160px', 
+                          sm: '200px', 
+                          md: '180px',
+                          lg: '220px'
+                        },
                         mx: 'auto',
-                        display: 'block',
+                        aspectRatio: '3/4',
+                        borderRadius: { xs: '12px', sm: '16px' },
+                        overflow: 'hidden',
+                        boxShadow: {
+                          xs: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                          sm: '0 8px 32px rgba(0, 0, 0, 0.4)'
+                        },
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: { xs: 'scale(1.02)', sm: 'scale(1.05)' },
+                          boxShadow: {
+                            xs: '0 6px 24px rgba(0, 0, 0, 0.4)',
+                            sm: '0 12px 48px rgba(0, 0, 0, 0.6)'
+                          },
+                        }
                       }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={9}>
-                    <Typography variant="h5" sx={{ color: 'white', fontWeight: 600, mb: 1 }}>
-                      {movie.title}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                      <Chip label={movie.year} size="small" sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }} />
-                      <Chip label={movie.genres?.[0] || 'Unknown'} size="small" sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }} />
-                      <QualityChip label={movie.quality || 'HD'} size="small" />
+                    >
+                      <Box
+                        component="img"
+                        src={movie.poster || '/placeholder-movie.svg'}
+                        alt={movie.title}
+                        loading="lazy"
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            filter: { xs: 'brightness(1.05)', sm: 'brightness(1.1)' },
+                          }
+                        }}
+                        onError={(e) => {
+                          e.target.src = '/placeholder-movie.svg';
+                        }}
+                      />
+                      
+                      {/* Image Overlay with Quality Badge */}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: { xs: 6, sm: 8 },
+                          right: { xs: 6, sm: 8 },
+                          background: 'linear-gradient(45deg, #2ed573, #1e90ff)',
+                          color: 'white',
+                          px: { xs: 0.75, sm: 1 },
+                          py: { xs: 0.25, sm: 0.5 },
+                          borderRadius: { xs: '6px', sm: '8px' },
+                          fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                          fontWeight: 600,
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              background: 'linear-gradient(45deg, #2ed573, #1e90ff)',
+                              color: 'white',
+                              px: { xs: 0.75, sm: 1 },
+                              py: { xs: 0.25, sm: 0.5 },
+                              borderRadius: { xs: '6px', sm: '8px' },
+                              fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                              fontWeight: 600,
+                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                              textAlign: 'center'
+                            }}
+                          >
+                            HD 1080p
+                          </Box>
+                          <Box
+                            sx={{
+                              background: 'rgba(0, 0, 0, 0.7)',
+                              color: 'white',
+                              px: { xs: 0.5, sm: 0.75 },
+                              py: { xs: 0.25, sm: 0.25 },
+                              borderRadius: { xs: '4px', sm: '6px' },
+                              fontSize: { xs: '0.55rem', sm: '0.65rem' },
+                              fontWeight: 500,
+                              textAlign: 'center'
+                            }}
+                          >
+                            MP4 | 5.1
+                          </Box>
+                        </Box>
+                      </Box>
+                      
+                      {/* Loading Skeleton Overlay */}
+                      {!movie.poster && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 2s infinite',
+                            '@keyframes shimmer': {
+                              '0%': { backgroundPosition: '-200% 0' },
+                              '100%': { backgroundPosition: '200% 0' }
+                            }
+                          }}
+                        />
+                      )}
                     </Box>
-                    <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                      {movie.plot?.substring(0, 150)}...
-                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={8} md={9}>
+                    <Box sx={{ 
+                      pl: { xs: 0, sm: 2, md: 3 },
+                      pr: { xs: 0, sm: 1 },
+                      py: { xs: 2, sm: 0 }
+                    }}>
+                      <Typography 
+                        variant="h5" 
+                        sx={{ 
+                          color: 'white', 
+                          fontWeight: 600, 
+                          mb: { xs: 1.5, sm: 2 },
+                          fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+                          textAlign: { xs: 'center', sm: 'left' },
+                          lineHeight: { xs: 1.3, sm: 1.2 }
+                        }}
+                      >
+                        {movie.title}
+                      </Typography>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        gap: { xs: 1, sm: 1.5 }, 
+                        mb: { xs: 2, sm: 2.5 }, 
+                        flexWrap: 'wrap',
+                        justifyContent: { xs: 'center', sm: 'flex-start' }
+                      }}>
+                        <Chip 
+                          label={movie.year} 
+                          size="small" 
+                          sx={{ 
+                            background: 'rgba(255, 255, 255, 0.1)', 
+                            color: 'white',
+                            fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                          }} 
+                        />
+                        <Chip 
+                          label={movie.genres?.[0] || 'Unknown'} 
+                          size="small" 
+                          sx={{ 
+                            background: 'rgba(255, 255, 255, 0.1)', 
+                            color: 'white',
+                            fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                          }} 
+                        />
+                        <QualityChip 
+                          label={movie.quality || 'HD'} 
+                          size="small" 
+                          sx={{
+                            fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                          }}
+                        />
+                      </Box>
+                      
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: 'rgba(255, 255, 255, 0.8)', 
+                          mb: { xs: 2.5, sm: 3 },
+                          fontSize: { xs: '0.875rem', sm: '0.9rem', md: '1rem' },
+                          textAlign: { xs: 'center', sm: 'left' },
+                          lineHeight: { xs: 1.5, sm: 1.6 },
+                          maxWidth: { xs: '100%', md: '90%' }
+                        }}
+                      >
+                        {movie.plot?.substring(0, 150)}...
+                      </Typography>
+                    
+                    {/* Share Options */}
+                    <Box sx={{ mt: 3 }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          color: 'white', 
+                          fontWeight: 600,
+                          mb: 2,
+                          fontSize: { xs: '1rem', sm: '1.125rem' },
+                          textAlign: { xs: 'center', sm: 'left' }
+                        }}
+                      >
+                        Share This Movie
+                      </Typography>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        gap: { xs: 1, sm: 1.5 }, 
+                        flexWrap: 'wrap',
+                        justifyContent: { xs: 'center', sm: 'flex-start' },
+                        alignItems: 'center'
+                      }}>
+                        <Tooltip title={copySuccess ? "Link Copied!" : "Copy Link"}>
+                          <ShareButton 
+                            platform="copy"
+                            onClick={() => handleShareClick('copy')}
+                            sx={{
+                              background: copySuccess ? 'linear-gradient(45deg, #2ed573, #1e90ff)' : undefined
+                            }}
+                          >
+                            {copySuccess ? <CheckIcon fontSize="small" /> : <FileCopyIcon fontSize="small" />}
+                          </ShareButton>
+                        </Tooltip>
+                        
+                        <Tooltip title="Share on WhatsApp">
+                          <ShareButton platform="whatsapp" onClick={() => handleShareClick('whatsapp')}>
+                            <WhatsAppIcon fontSize="small" />
+                          </ShareButton>
+                        </Tooltip>
+                        
+                        <Tooltip title="Share on Telegram">
+                          <ShareButton platform="telegram" onClick={() => handleShareClick('telegram')}>
+                            <TelegramIcon fontSize="small" />
+                          </ShareButton>
+                        </Tooltip>
+                        
+                        <Tooltip title="Share on Facebook">
+                          <ShareButton platform="facebook" onClick={() => handleShareClick('facebook')}>
+                            <FacebookIcon fontSize="small" />
+                          </ShareButton>
+                        </Tooltip>
+                        
+                        <Tooltip title="Share on Twitter">
+                          <ShareButton platform="twitter" onClick={() => handleShareClick('twitter')}>
+                            <TwitterIcon fontSize="small" />
+                          </ShareButton>
+                        </Tooltip>
+                        
+                        {/* Share Count/Stats */}
+                        <Box sx={{ 
+                          ml: { xs: 0, sm: 2 }, 
+                          mt: { xs: 1, sm: 0 },
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5
+                        }}>
+                          <ShareIcon sx={{ 
+                            color: 'rgba(255, 255, 255, 0.5)', 
+                            fontSize: '1rem' 
+                          }} />
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              color: 'rgba(255, 255, 255, 0.5)',
+                              fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                            }}
+                          >
+                            Share with friends
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                    </Box>
                   </Grid>
                 </Grid>
               </InfoCard>
@@ -391,9 +879,13 @@ const DownloadPage = () => {
                 background: 'linear-gradient(145deg, #1a1a2e, #25253a)',
                 border: '1px solid rgba(102, 126, 234, 0.3)',
                 color: 'white',
-                mb: 3,
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '0.875rem', sm: '0.875rem' },
                 '& .MuiAlert-icon': {
                   color: '#667eea',
+                },
+                '& .MuiAlert-message': {
+                  fontSize: { xs: '0.875rem', sm: '0.875rem' }
                 }
               }}
             >
@@ -404,9 +896,12 @@ const DownloadPage = () => {
 
             {/* Countdown or Download Ready */}
             {!downloadReady ? (
-              <CountdownBox sx={{ mb: 4 }}>
+              <CountdownBox sx={{ mb: { xs: 3, sm: 4 } }}>
                 <TimerIcon />
-                <Typography variant="h6">
+                <Typography 
+                  variant="h6"
+                  sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+                >
                   Download will be ready in {countdown} seconds
                 </Typography>
               </CountdownBox>
@@ -417,13 +912,22 @@ const DownloadPage = () => {
                   background: 'linear-gradient(145deg, #2ed573, #1e90ff)',
                   border: 'none',
                   color: 'white',
-                  mb: 4,
+                  mb: { xs: 3, sm: 4 },
                   '& .MuiAlert-icon': {
                     color: 'white',
+                  },
+                  '& .MuiAlert-message': {
+                    fontSize: { xs: '0.9rem', sm: '1rem' }
                   }
                 }}
               >
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    fontSize: { xs: '0.9rem', sm: '1rem' }
+                  }}
+                >
                   <CheckCircleIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
                   Downloads are now ready!
                 </Typography>
@@ -431,89 +935,163 @@ const DownloadPage = () => {
             )}
 
             {/* Download Options */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
               {downloads.length > 0 ? downloads.map((download, index) => (
-                <Grid item xs={12} key={index}>
-                  <Zoom in timeout={1000 + index * 200}>
-                    <DownloadCard>
-                      <CardContent sx={{ p: 3 }}>
-                        <Grid container spacing={3} alignItems="center">
-                          <Grid item xs={12} md={8}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                              <CloudDownloadIcon sx={{ color: '#667eea', mr: 2, fontSize: '2rem' }} />
-                              <Box>
-                                <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
-                                  {download.quality || 'HD'} Quality
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                  {download.format || 'MP4'} • {typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'}
-                                </Typography>
+                  <Grid item xs={12} key={index}>
+                    <Zoom in timeout={1000 + index * 200}>
+                      <DownloadCard>
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                          <Grid container spacing={{ xs: 2, sm: 3 }} alignItems="center">
+                            <Grid item xs={12} md={8}>
+                              <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                mb: { xs: 1.5, sm: 2 },
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                textAlign: { xs: 'center', sm: 'left' }
+                              }}>
+                                <CloudDownloadIcon sx={{ 
+                                  color: '#667eea', 
+                                  mr: { xs: 0, sm: 2 }, 
+                                  mb: { xs: 1, sm: 0 },
+                                  fontSize: { xs: '1.75rem', sm: '2rem' }
+                                }} />
+                                <Box>
+                                  <Typography 
+                                    variant="h6" 
+                                    sx={{ 
+                                      color: 'white', 
+                                      fontWeight: 600,
+                                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                                    }}
+                                  >
+                                    {download.quality || 'HD'} Quality
+                                  </Typography>
+                                  <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                      color: 'rgba(255, 255, 255, 0.7)',
+                                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                                    }}
+                                  >
+                                    {download.format || 'MP4'} | {typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                            
-                            <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                              <QualityChip label={download.quality || 'HD'} size="small" />
-                              <SizeChip label={typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'} size="small" />
-                              <Chip 
-                                label={download.format || 'MP4'} 
-                                size="small" 
-                                sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
-                              />
-                            </Box>
+                              
+                              <Box sx={{ 
+                                display: 'flex', 
+                                gap: 1, 
+                                mb: { xs: 1.5, sm: 2 }, 
+                                flexWrap: 'wrap',
+                                justifyContent: { xs: 'center', sm: 'flex-start' }
+                              }}>
+                                <QualityChip label={`${download.quality || 'HD'} | ${download.format || 'MP4'} | 5.1`} size="small" />
+                                <SizeChip label={typeof download.size === 'object' && download.size?.value && download.size?.unit ? `${download.size.value} ${download.size.unit}` : download.size || '1.2 GB'} size="small" />
+                                <Chip 
+                                  label={`${download.format || 'MP4'} H.264`} 
+                                  size="small" 
+                                  sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
+                                />
+                              </Box>
 
-                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                              High-speed download • Resume supported • No ads
-                            </Typography>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: 'rgba(255, 255, 255, 0.8)',
+                                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                  textAlign: { xs: 'center', sm: 'left' }
+                                }}
+                              >
+                                High-speed download | Resume supported | No ads
+                              </Typography>
+                            </Grid>
+                            
+                            <Grid item xs={12} md={4}>
+                              <DownloadButton
+                                fullWidth
+                                startIcon={<DownloadIcon />}
+                                disabled={!downloadReady}
+                                onClick={() => handleDownloadClick(download)}
+                              >
+                                {downloadReady ? 'Download Now' : `Wait ${countdown}s`}
+                              </DownloadButton>
+                            </Grid>
                           </Grid>
-                          
-                          <Grid item xs={12} md={4}>
-                            <DownloadButton
-                              fullWidth
-                              startIcon={<DownloadIcon />}
-                              disabled={!downloadReady}
-                              onClick={() => handleDownloadClick(download)}
-                            >
-                              {downloadReady ? 'Download Now' : `Wait ${countdown}s`}
-                            </DownloadButton>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                    </DownloadCard>
-                  </Zoom>
-                </Grid>
+                        </CardContent>
+                      </DownloadCard>
+                    </Zoom>
+                  </Grid>
               )) : (
                 // Default download options when no specific downloads are available
                 <>
                   <Grid item xs={12}>
                     <Zoom in timeout={1000}>
                       <DownloadCard>
-                        <CardContent sx={{ p: 3 }}>
-                          <Grid container spacing={3} alignItems="center">
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                          <Grid container spacing={{ xs: 2, sm: 3 }} alignItems="center">
                             <Grid item xs={12} md={8}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <CloudDownloadIcon sx={{ color: '#667eea', mr: 2, fontSize: '2rem' }} />
+                              <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                mb: { xs: 1.5, sm: 2 },
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                textAlign: { xs: 'center', sm: 'left' }
+                              }}>
+                                <CloudDownloadIcon sx={{ 
+                                  color: '#667eea', 
+                                  mr: { xs: 0, sm: 2 }, 
+                                  mb: { xs: 1, sm: 0 },
+                                  fontSize: { xs: '1.75rem', sm: '2rem' }
+                                }} />
                                 <Box>
-                                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                                  <Typography 
+                                    variant="h6" 
+                                    sx={{ 
+                                      color: 'white', 
+                                      fontWeight: 600,
+                                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                                    }}
+                                  >
                                     1080p HD Quality
                                   </Typography>
-                                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                    MP4 • 2.1 GB
+                                  <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                      color: 'rgba(255, 255, 255, 0.7)',
+                                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                                    }}
+                                  >
+                                    MP4 | 2.1 GB
                                   </Typography>
                                 </Box>
                               </Box>
                               
-                              <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                                <QualityChip label="1080p" size="small" />
+                              <Box sx={{ 
+                                display: 'flex', 
+                                gap: 1, 
+                                mb: { xs: 1.5, sm: 2 }, 
+                                flexWrap: 'wrap',
+                                justifyContent: { xs: 'center', sm: 'flex-start' }
+                              }}>
+                                <QualityChip label="1080p HD | MP4 | 5.1" size="small" />
                                 <SizeChip label="2.1 GB" size="small" />
                                 <Chip 
-                                  label="MP4" 
+                                  label="MP4 H.264" 
                                   size="small" 
                                   sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
                                 />
                               </Box>
 
-                              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                                High-speed download • Resume supported • No ads
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: 'rgba(255, 255, 255, 0.8)',
+                                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                  textAlign: { xs: 'center', sm: 'left' }
+                                }}
+                              >
+                                High-speed download | Resume supported | No ads
                               </Typography>
                             </Grid>
                             
@@ -536,33 +1114,70 @@ const DownloadPage = () => {
                   <Grid item xs={12}>
                     <Zoom in timeout={1200}>
                       <DownloadCard>
-                        <CardContent sx={{ p: 3 }}>
-                          <Grid container spacing={3} alignItems="center">
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                          <Grid container spacing={{ xs: 2, sm: 3 }} alignItems="center">
                             <Grid item xs={12} md={8}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <CloudDownloadIcon sx={{ color: '#667eea', mr: 2, fontSize: '2rem' }} />
+                              <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                mb: { xs: 1.5, sm: 2 },
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                textAlign: { xs: 'center', sm: 'left' }
+                              }}>
+                                <CloudDownloadIcon sx={{ 
+                                  color: '#667eea', 
+                                  mr: { xs: 0, sm: 2 }, 
+                                  mb: { xs: 1, sm: 0 },
+                                  fontSize: { xs: '1.75rem', sm: '2rem' }
+                                }} />
                                 <Box>
-                                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                                  <Typography 
+                                    variant="h6" 
+                                    sx={{ 
+                                      color: 'white', 
+                                      fontWeight: 600,
+                                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                                    }}
+                                  >
                                     720p HD Quality
                                   </Typography>
-                                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                    MP4 • 1.2 GB
+                                  <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                      color: 'rgba(255, 255, 255, 0.7)',
+                                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                                    }}
+                                  >
+                                    MP4 | 1.2 GB
                                   </Typography>
                                 </Box>
                               </Box>
                               
-                              <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                                <QualityChip label="720p" size="small" />
+                              <Box sx={{ 
+                                display: 'flex', 
+                                gap: 1, 
+                                mb: { xs: 1.5, sm: 2 }, 
+                                flexWrap: 'wrap',
+                                justifyContent: { xs: 'center', sm: 'flex-start' }
+                              }}>
+                                <QualityChip label="720p HD | MP4 | Stereo" size="small" />
                                 <SizeChip label="1.2 GB" size="small" />
                                 <Chip 
-                                  label="MP4" 
+                                  label="MP4 H.264" 
                                   size="small" 
                                   sx={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
                                 />
                               </Box>
 
-                              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                                High-speed download • Resume supported • No ads
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: 'rgba(255, 255, 255, 0.8)',
+                                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                  textAlign: { xs: 'center', sm: 'left' }
+                                }}
+                              >
+                                High-speed download | Resume supported | No ads
                               </Typography>
                             </Grid>
                             
@@ -586,14 +1201,28 @@ const DownloadPage = () => {
             </Grid>
 
             {/* Features */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
               <Grid item xs={12} sm={6} md={3}>
                 <FeatureCard>
-                  <SecurityIcon sx={{ color: '#667eea', fontSize: '2.5rem', mb: 1 }} />
-                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, mb: 1 }}>
+                  <SecurityIcon sx={{ color: '#667eea', fontSize: { xs: '2rem', sm: '2.5rem' }, mb: 1 }} />
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      color: 'white', 
+                      fontWeight: 600, 
+                      mb: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
                     Secure
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}
+                  >
                     Virus-free downloads
                   </Typography>
                 </FeatureCard>
@@ -601,11 +1230,25 @@ const DownloadPage = () => {
               
               <Grid item xs={12} sm={6} md={3}>
                 <FeatureCard>
-                  <SpeedIcon sx={{ color: '#667eea', fontSize: '2.5rem', mb: 1 }} />
-                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, mb: 1 }}>
+                  <SpeedIcon sx={{ color: '#667eea', fontSize: { xs: '2rem', sm: '2.5rem' }, mb: 1 }} />
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      color: 'white', 
+                      fontWeight: 600, 
+                      mb: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
                     Fast
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}
+                  >
                     High-speed servers
                   </Typography>
                 </FeatureCard>
@@ -613,11 +1256,25 @@ const DownloadPage = () => {
               
               <Grid item xs={12} sm={6} md={3}>
                 <FeatureCard>
-                  <ShieldIcon sx={{ color: '#667eea', fontSize: '2.5rem', mb: 1 }} />
-                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, mb: 1 }}>
+                  <ShieldIcon sx={{ color: '#667eea', fontSize: { xs: '2rem', sm: '2.5rem' }, mb: 1 }} />
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      color: 'white', 
+                      fontWeight: 600, 
+                      mb: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
                     Protected
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}
+                  >
                     SSL encrypted
                   </Typography>
                 </FeatureCard>
@@ -625,11 +1282,25 @@ const DownloadPage = () => {
               
               <Grid item xs={12} sm={6} md={3}>
                 <FeatureCard>
-                  <VerifiedIcon sx={{ color: '#667eea', fontSize: '2.5rem', mb: 1 }} />
-                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, mb: 1 }}>
+                  <VerifiedIcon sx={{ color: '#667eea', fontSize: { xs: '2rem', sm: '2.5rem' }, mb: 1 }} />
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      color: 'white', 
+                      fontWeight: 600, 
+                      mb: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
                     Verified
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}
+                  >
                     Quality guaranteed
                   </Typography>
                 </FeatureCard>
@@ -638,36 +1309,64 @@ const DownloadPage = () => {
 
             {/* Instructions */}
             <InfoCard>
-              <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  color: 'white', 
+                  mb: { xs: 1.5, sm: 2 }, 
+                  fontWeight: 600, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1,
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  textAlign: { xs: 'center', sm: 'left' }
+                }}
+              >
                 <InfoIcon sx={{ color: '#667eea' }} />
                 Download Instructions
               </Typography>
               <List>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
+                <ListItem sx={{ px: 0, flexDirection: { xs: 'column', sm: 'row' }, textAlign: { xs: 'center', sm: 'left' } }}>
+                  <ListItemIcon sx={{ minWidth: { xs: 'auto', sm: '56px' }, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                     <CheckCircleIcon sx={{ color: '#2ed573' }} />
                   </ListItemIcon>
                   <ListItemText
                     primary="Click the download button above"
-                    sx={{ '& .MuiListItemText-primary': { color: 'rgba(255, 255, 255, 0.9)' } }}
+                    sx={{ 
+                      '& .MuiListItemText-primary': { 
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        fontSize: { xs: '0.9rem', sm: '1rem' }
+                      } 
+                    }}
                   />
                 </ListItem>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
+                <ListItem sx={{ px: 0, flexDirection: { xs: 'column', sm: 'row' }, textAlign: { xs: 'center', sm: 'left' } }}>
+                  <ListItemIcon sx={{ minWidth: { xs: 'auto', sm: '56px' }, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                     <CheckCircleIcon sx={{ color: '#2ed573' }} />
                   </ListItemIcon>
                   <ListItemText
                     primary="Choose your preferred quality and format"
-                    sx={{ '& .MuiListItemText-primary': { color: 'rgba(255, 255, 255, 0.9)' } }}
+                    sx={{ 
+                      '& .MuiListItemText-primary': { 
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        fontSize: { xs: '0.9rem', sm: '1rem' }
+                      } 
+                    }}
                   />
                 </ListItem>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
+                <ListItem sx={{ px: 0, flexDirection: { xs: 'column', sm: 'row' }, textAlign: { xs: 'center', sm: 'left' } }}>
+                  <ListItemIcon sx={{ minWidth: { xs: 'auto', sm: '56px' }, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                     <CheckCircleIcon sx={{ color: '#2ed573' }} />
                   </ListItemIcon>
                   <ListItemText
                     primary="Download will start automatically"
-                    sx={{ '& .MuiListItemText-primary': { color: 'rgba(255, 255, 255, 0.9)' } }}
+                    sx={{ 
+                      '& .MuiListItemText-primary': { 
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        fontSize: { xs: '0.9rem', sm: '1rem' }
+                      } 
+                    }}
                   />
                 </ListItem>
               </List>
