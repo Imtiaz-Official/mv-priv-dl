@@ -1,7 +1,7 @@
 const express = require('express');
 const { Post } = require('../models');
 const { authenticate, requireModerator, optionalAuth } = require('../middleware/auth');
-const { validatePost, validateComment, validatePagination, validateObjectId } = require('../middleware/validation');
+const { validatePost, validateComment, validatePagination, validateObjectId, sanitizeInput } = require('../middleware/validation');
 
 const router = express.Router();
 
@@ -241,7 +241,7 @@ router.get('/:identifier', optionalAuth, async (req, res) => {
 // @desc    Create new post
 // @route   POST /api/posts
 // @access  Private (Moderator+)
-router.post('/', authenticate, requireModerator, validatePost, async (req, res) => {
+router.post('/', authenticate, requireModerator, sanitizeInput, validatePost, async (req, res) => {
   try {
     const postData = {
       ...req.body,

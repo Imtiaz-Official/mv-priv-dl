@@ -3,6 +3,8 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { Contact } = require('../models');
 const { authenticate, requireAdmin } = require('../middleware/auth');
+const { sanitizeInput } = require('../middleware/validation');
+const { contactLimiter } = require('../middleware/rateLimiter');
 const emailService = require('../utils/emailService');
 
 // Validation rules for contact form
@@ -28,7 +30,7 @@ const contactValidation = [
 // @desc    Submit contact form
 // @route   POST /api/contact
 // @access  Public
-router.post('/', contactValidation, async (req, res) => {
+router.post('/', contactLimiter, sanitizeInput, contactValidation, async (req, res) => {
   try {
     // Check validation errors
     const errors = validationResult(req);

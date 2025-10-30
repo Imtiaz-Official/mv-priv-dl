@@ -1,7 +1,7 @@
 const express = require('express');
 const { Movie } = require('../models');
 const { authenticate, requireModerator, optionalAuth } = require('../middleware/auth');
-const { validateMovie, validatePagination, validateSearch, validateObjectId } = require('../middleware/validation');
+const { validateMovie, validatePagination, validateSearch, validateObjectId, sanitizeInput } = require('../middleware/validation');
 const { trackMovieView } = require('../middleware/viewTracker');
 const imageService = require('../services/imageService');
 
@@ -438,7 +438,7 @@ router.get('/:identifier', optionalAuth, trackMovieView, async (req, res) => {
 // @desc    Create new movie
 // @route   POST /api/movies
 // @access  Private (Moderator+)
-router.post('/', authenticate, requireModerator, validateMovie, async (req, res) => {
+router.post('/', authenticate, requireModerator, sanitizeInput, validateMovie, async (req, res) => {
   try {
     const movieData = {
       ...req.body,

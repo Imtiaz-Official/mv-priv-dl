@@ -1,4 +1,16 @@
 const { body, param, query, validationResult } = require('express-validator');
+const DOMPurify = require('isomorphic-dompurify');
+
+// Sanitize HTML content to prevent XSS
+const sanitizeHtml = (value) => {
+  if (typeof value === 'string') {
+    return DOMPurify.sanitize(value, { 
+      ALLOWED_TAGS: [], 
+      ALLOWED_ATTR: [] 
+    });
+  }
+  return value;
+};
 
 // Handle validation errors
 const handleValidationErrors = (req, res, next) => {
@@ -9,6 +21,25 @@ const handleValidationErrors = (req, res, next) => {
       message: 'Validation failed',
       errors: errors.array()
     });
+  }
+  next();
+};
+
+// Sanitize request body middleware
+const sanitizeInput = (req, res, next) => {
+  if (req.body) {
+    const sanitizeObject = (obj) => {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'string') {
+            obj[key] = sanitizeHtml(obj[key]);
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            sanitizeObject(obj[key]);
+          }
+        }
+      }
+    };
+    sanitizeObject(req.body);
   }
   next();
 };
@@ -237,6 +268,7 @@ const validateObjectId = (paramName) => [
 
 module.exports = {
   handleValidationErrors,
+  sanitizeInput,
   validateUserRegistration,
   validateUserLogin,
   validateMovie,
