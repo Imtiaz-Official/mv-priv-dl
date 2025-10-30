@@ -42,6 +42,7 @@ import {
   Edit as EditIcon,
   CloudUpload as UploadIcon,
   Download as DownloadIcon,
+  Check as CheckIcon,
 } from '@mui/icons-material';
 
 const SystemSettings = () => {
@@ -120,6 +121,8 @@ const SystemSettings = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [backupDialog, setBackupDialog] = useState(false);
   const [backups, setBackups] = useState([]);
+  const [saveButtonVisible, setSaveButtonVisible] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Custom styled switch with bright colors
   const StyledSwitch = ({ checked, onChange, ...props }) => (
@@ -173,6 +176,10 @@ const SystemSettings = () => {
       console.log('New settings state:', newSettings);
       return newSettings;
     });
+    
+    // Show save button when changes are made
+    setSaveButtonVisible(true);
+    setSaveSuccess(false);
   }, []);
 
   // Create refs for number inputs to manage cursor position
@@ -252,6 +259,14 @@ const SystemSettings = () => {
       const result = await response.json();
       console.log('Success response:', result);
       showSnackbar('Settings saved successfully!', 'success');
+      
+      // Show success animation and hide save button
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveButtonVisible(false);
+        setSaveSuccess(false);
+      }, 2000);
+      
     } catch (error) {
       console.error('Error saving settings:', error);
       showSnackbar(`Failed to save settings: ${error.message}`, 'error');
@@ -811,189 +826,239 @@ const SystemSettings = () => {
             title="Notification Settings" 
             icon={<NotificationIcon sx={{ color: '#f59e0b' }} />}
           >
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <FormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={settings.notifications?.emailNotifications || false}
-                        onChange={(e) => handleSettingChange('notifications', 'emailNotifications', e.target.checked)}
-                      />
-                    }
-                    label="Email Notifications"
-                    sx={{ color: 'white' }}
-                  />
+            <Grid container spacing={4}>
+              {/* General Notifications */}
+              <Grid item xs={12} lg={4}>
+                <Box sx={{ 
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)',
+                  borderRadius: 3,
+                  p: 3,
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  height: 'fit-content'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Box sx={{ 
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
+                      borderRadius: '50%',
+                      p: 1,
+                      mr: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <NotificationIcon sx={{ color: 'white', fontSize: 20 }} />
+                    </Box>
+                    <Typography variant="h6" sx={{ 
+                      color: 'white', 
+                      fontWeight: 600,
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      General Settings
+                    </Typography>
+                  </Box>
 
-                  <FormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={settings.notifications?.pushNotifications || false}
-                        onChange={(e) => handleSettingChange('notifications', 'pushNotifications', e.target.checked)}
-                      />
-                    }
-                    label="Push Notifications"
-                    sx={{ color: 'white' }}
-                  />
-
-                  <FormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={settings.notifications?.adminNotifications || false}
-                        onChange={(e) => handleSettingChange('notifications', 'adminNotifications', e.target.checked)}
-                      />
-                    }
-                    label="Admin Notifications"
-                    sx={{ color: 'white' }}
-                  />
-
-                  <FormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={settings.notifications?.userWelcomeEmail || false}
-                        onChange={(e) => handleSettingChange('notifications', 'userWelcomeEmail', e.target.checked)}
-                      />
-                    }
-                    label="User Welcome Email"
-                    sx={{ color: 'white' }}
-                  />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                    {[
+                      { key: 'emailNotifications', label: 'Email Notifications', desc: 'Enable email-based notifications' },
+                      { key: 'pushNotifications', label: 'Push Notifications', desc: 'Browser push notifications' },
+                      { key: 'adminNotifications', label: 'Admin Notifications', desc: 'Administrative alerts' },
+                      { key: 'userWelcomeEmail', label: 'Welcome Emails', desc: 'Send welcome emails to new users' }
+                    ].map((item) => (
+                      <Box key={item.key} sx={{ 
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: 2,
+                        p: 2,
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(59, 130, 246, 0.3)',
+                          transform: 'translateY(-1px)'
+                        }
+                      }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 500 }}>
+                            {item.label}
+                          </Typography>
+                          <StyledSwitch
+                            checked={settings.notifications?.[item.key] || false}
+                            onChange={(e) => handleSettingChange('notifications', item.key, e.target.checked)}
+                          />
+                        </Box>
+                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                          {item.desc}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
-                    Gmail Notifications
-                  </Typography>
-
-                  <TextField
-                    label="Admin Gmail Address"
-                    type="email"
-                    value={settings.notifications?.adminGmailAddress || ''}
-                    onChange={(e) => handleSettingChange('notifications', 'adminGmailAddress', e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="admin@gmail.com"
-                    helperText="Gmail address to receive all site notifications and tracking information"
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        color: 'white',
-                        '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                        '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                      },
-                      '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
-                      '& .MuiFormHelperText-root': { color: 'rgba(255, 255, 255, 0.6)' },
-                    }}
-                  />
-
-                  <FormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={settings.notifications?.enableGmailNotifications || false}
-                        onChange={(e) => handleSettingChange('notifications', 'enableGmailNotifications', e.target.checked)}
-                      />
-                    }
-                    label="Enable Gmail Notifications"
-                    sx={{ color: 'white' }}
-                  />
-
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 2 }}>
-                      Notification Types:
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.newUserRegistration || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              newUserRegistration: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="New User Registration"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
-
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.newMovieUploaded || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              newMovieUploaded: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="New Movie Uploaded"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
-
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.downloadTracking || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              downloadTracking: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="Download Tracking"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
-
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.systemAlerts || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              systemAlerts: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="System Alerts"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
-
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.userActivity || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              userActivity: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="User Activity"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
-
-                      <FormControlLabel
-                        control={
-                          <StyledSwitch
-                            checked={settings.notifications?.gmailNotificationTypes?.errorReports || false}
-                            onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
-                              ...settings.notifications?.gmailNotificationTypes,
-                              errorReports: e.target.checked
-                            })}
-                            size="small"
-                          />
-                        }
-                        label="Error Reports"
-                        sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                      />
+              {/* Gmail Configuration */}
+              <Grid item xs={12} lg={8}>
+                <Box sx={{ 
+                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+                  borderRadius: 3,
+                  p: 3,
+                  border: '1px solid rgba(34, 197, 94, 0.2)',
+                  height: 'fit-content'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Box sx={{ 
+                      background: 'linear-gradient(135deg, #22c55e 0%, #3b82f6 100%)',
+                      borderRadius: '50%',
+                      p: 1,
+                      mr: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z"/>
+                      </svg>
                     </Box>
+                    <Typography variant="h6" sx={{ 
+                      color: 'white', 
+                      fontWeight: 600,
+                      background: 'linear-gradient(135deg, #22c55e 0%, #3b82f6 100%)',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      Gmail Integration
+                    </Typography>
                   </Box>
+
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ 
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: 2,
+                        p: 3,
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        mb: 3
+                      }}>
+                        <Typography variant="subtitle1" sx={{ color: 'white', mb: 2, fontWeight: 500 }}>
+                          Configuration
+                        </Typography>
+                        
+                        <TextField
+                          label="Admin Gmail Address"
+                          type="email"
+                          value={settings.notifications?.adminGmailAddress || ''}
+                          onChange={(e) => handleSettingChange('notifications', 'adminGmailAddress', e.target.value)}
+                          fullWidth
+                          variant="outlined"
+                          placeholder="admin@gmail.com"
+                          helperText="Gmail address to receive notifications"
+                          sx={{
+                            mb: 3,
+                            '& .MuiOutlinedInput-root': {
+                              color: 'white',
+                              background: 'rgba(255, 255, 255, 0.05)',
+                              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                              '&:hover fieldset': { borderColor: 'rgba(34, 197, 94, 0.5)' },
+                              '&.Mui-focused fieldset': { borderColor: '#22c55e' },
+                            },
+                            '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
+                            '& .MuiFormHelperText-root': { color: 'rgba(255, 255, 255, 0.6)' },
+                          }}
+                        />
+
+                        <Box sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center',
+                          background: 'rgba(34, 197, 94, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          border: '1px solid rgba(34, 197, 94, 0.2)'
+                        }}>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 500 }}>
+                              Enable Gmail Notifications
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                              Activate email notifications via Gmail
+                            </Typography>
+                          </Box>
+                          <StyledSwitch
+                            checked={settings.notifications?.enableGmailNotifications || false}
+                            onChange={(e) => handleSettingChange('notifications', 'enableGmailNotifications', e.target.checked)}
+                          />
+                        </Box>
+                      </Box>
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ 
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: 2,
+                        p: 3,
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }}>
+                        <Typography variant="subtitle1" sx={{ color: 'white', mb: 2, fontWeight: 500 }}>
+                          Notification Types
+                        </Typography>
+                        
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                          {[
+                            { key: 'newUserRegistration', label: 'New User Registration', icon: '👤', color: '#3b82f6' },
+                            { key: 'newMovieUploaded', label: 'New Movie Uploaded', icon: '🎬', color: '#8b5cf6' },
+                            { key: 'downloadTracking', label: 'Download Tracking', icon: '📥', color: '#06b6d4' },
+                            { key: 'systemAlerts', label: 'System Alerts', icon: '⚠️', color: '#f59e0b' },
+                            { key: 'userActivity', label: 'User Activity', icon: '📊', color: '#10b981' },
+                            { key: 'errorReports', label: 'Error Reports', icon: '🚨', color: '#ef4444' }
+                          ].map((item) => (
+                            <Box key={item.key} sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              background: 'rgba(255, 255, 255, 0.03)',
+                              borderRadius: 1.5,
+                              p: 1.5,
+                              border: '1px solid rgba(255, 255, 255, 0.08)',
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                background: 'rgba(255, 255, 255, 0.06)',
+                                transform: 'translateX(4px)'
+                              }
+                            }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Box sx={{ 
+                                  fontSize: '16px', 
+                                  mr: 1.5,
+                                  background: `${item.color}20`,
+                                  borderRadius: '50%',
+                                  width: 28,
+                                  height: 28,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}>
+                                  {item.icon}
+                                </Box>
+                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
+                                  {item.label}
+                                </Typography>
+                              </Box>
+                              <StyledSwitch
+                                checked={settings.notifications?.gmailNotificationTypes?.[item.key] || false}
+                                onChange={(e) => handleSettingChange('notifications', 'gmailNotificationTypes', {
+                                  ...settings.notifications?.gmailNotificationTypes,
+                                  [item.key]: e.target.checked
+                                })}
+                                size="small"
+                              />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
                 </Box>
               </Grid>
             </Grid>
@@ -1117,6 +1182,118 @@ const SystemSettings = () => {
           </SettingsCard>
         </Grid>
       </Grid>
+
+      {/* Floating Save Button */}
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 30,
+          right: 30,
+          zIndex: 1000,
+          transform: saveButtonVisible ? 'translateY(0)' : 'translateY(100px)',
+          opacity: saveButtonVisible ? 1 : 0,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={handleSaveSettings}
+          disabled={loading}
+          sx={{
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            minWidth: 'unset',
+            background: saveSuccess 
+              ? 'linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)'
+              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            transform: loading ? 'scale(0.95)' : 'scale(1)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              transform: 'scale(1.1)',
+              boxShadow: '0 12px 40px rgba(102, 126, 234, 0.6)',
+              background: saveSuccess 
+                ? 'linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)'
+                : 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+            },
+            '&:active': {
+              transform: 'scale(0.95)',
+            },
+            '&.Mui-disabled': {
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.5)',
+            },
+          }}
+        >
+          {loading ? (
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                borderTop: '2px solid white',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                '@keyframes spin': {
+                  '0%': { transform: 'rotate(0deg)' },
+                  '100%': { transform: 'rotate(360deg)' },
+                },
+              }}
+            />
+          ) : saveSuccess ? (
+            <CheckIcon 
+              sx={{ 
+                fontSize: 28,
+                animation: 'checkmark 0.5s ease-in-out',
+                '@keyframes checkmark': {
+                  '0%': { transform: 'scale(0)', opacity: 0 },
+                  '50%': { transform: 'scale(1.2)', opacity: 1 },
+                  '100%': { transform: 'scale(1)', opacity: 1 },
+                },
+              }} 
+            />
+          ) : (
+            <SaveIcon sx={{ fontSize: 28 }} />
+          )}
+        </Button>
+        
+        {/* Tooltip */}
+        <Box
+          sx={{
+            position: 'absolute',
+            right: '100%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            marginRight: 2,
+            padding: '8px 12px',
+            background: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            borderRadius: 1,
+            fontSize: '0.875rem',
+            whiteSpace: 'nowrap',
+            opacity: 0,
+            pointerEvents: 'none',
+            transition: 'opacity 0.3s ease',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              left: '100%',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              border: '6px solid transparent',
+              borderLeftColor: 'rgba(0, 0, 0, 0.8)',
+            },
+            '.MuiButton-root:hover + &': {
+              opacity: 1,
+            },
+          }}
+        >
+          {loading ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save All Settings'}
+        </Box>
+      </Box>
 
       {/* Snackbar for notifications */}
       <Snackbar
