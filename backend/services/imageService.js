@@ -5,7 +5,7 @@ const MovieImageCache = require('./movieImageCache');
 class ImageService {
   constructor() {
     // TMDB API configuration
-    this.tmdbApiKey = process.env.TMDB_API_KEY || 'your_tmdb_api_key_here';
+    this.tmdbApiKey = process.env.TMDB_API_KEY;
     this.tmdbBaseUrl = 'https://api.themoviedb.org/3';
     this.tmdbImageBaseUrl = 'https://image.tmdb.org/t/p';
     
@@ -40,8 +40,8 @@ class ImageService {
    */
   async searchMovie(title, year = null) {
     try {
-      // Check if API key is valid (not the placeholder)
-      if (!this.tmdbApiKey || this.tmdbApiKey === 'your_tmdb_api_key_here') {
+      // Check if API key is valid
+      if (!this.tmdbApiKey) {
         console.log('TMDB API key not configured, using placeholder images');
         return null;
       }

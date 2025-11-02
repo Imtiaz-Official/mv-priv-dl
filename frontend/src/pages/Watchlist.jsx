@@ -330,9 +330,9 @@ const Watchlist = () => {
         </Fade>
       ) : (
         <Fade in timeout={1000}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 1, sm: 2, md: 3 }}>
             {watchlistMovies.map((movie, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
+              <Grid item xs={4} sm={6} md={4} lg={3} key={movie.id}>
                 <Fade in timeout={800 + index * 100}>
                   <Box>
                     <MovieCard 

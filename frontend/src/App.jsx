@@ -28,9 +28,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movies" element={<Movies />} />
-          <Route path="/movie/:id" element={<MovieDetail />} />
-          <Route path="/modern-movie/:id" element={<ModernMovieDetail />} />
-          <Route path="/download/:id" element={<DownloadPage />} />
+          <Route path="/movie/:slug" element={<MovieDetail />} />
+          <Route path="/modern-movie/:slug" element={<ModernMovieDetail />} />
+          <Route path="/download/:slug" element={<DownloadPage />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/blog" element={<Blog />} />

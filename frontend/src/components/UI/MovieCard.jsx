@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import LazyImage from './LazyImage';
 import WatchlistButton from './WatchlistButton';
+import { generateMovieUrl } from '../../utils/movieUtils';
 
 const MovieCard = React.memo(({ movie, loading = false }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -66,16 +67,16 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
     return (
       <Card
         sx={{
-          height: { xs: 400, md: 520 },
+          height: { xs: 220, sm: 400, md: 520 },
           background: 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 3,
+          borderRadius: { xs: 2, md: 3 },
         }}
       >
         <Skeleton
           variant="rectangular"
-          height={{ xs: 240, md: 300 }}
+          height={{ xs: 140, sm: 240, md: 300 }}
           sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
         />
         <CardContent sx={{ p: { xs: 1.5, md: 2 } }}>
@@ -96,11 +97,11 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
         onMouseEnter={() => !isMobile && setIsHovered(true)}
         onMouseLeave={() => !isMobile && setIsHovered(false)}
         sx={{
-          height: { xs: 400, md: 520 },
+          height: { xs: 220, sm: 400, md: 520 },
           background: 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 3,
+          borderRadius: { xs: 2, md: 3 },
           transition: 'all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)',
           cursor: 'pointer',
           position: 'relative',
@@ -114,10 +115,10 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
         }}
       >
         {/* Movie Poster */}
-        <Box sx={{ position: 'relative', height: { xs: 240, md: 300 }, overflow: 'hidden' }}>
+        <Box sx={{ position: 'relative', height: { xs: 140, sm: 240, md: 300 }, overflow: 'hidden' }}>
           <CardMedia
             component={Link}
-            to={`/movie/${movie.id}`}
+            to={generateMovieUrl(movie)}
             sx={{
               height: '100%',
               position: 'relative',
@@ -196,29 +197,29 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
           >
             <StarIcon sx={{ fontSize: { xs: 14, md: 16 }, color: '#ffd700' }} />
             <Typography variant="caption" sx={{ color: 'white', fontWeight: 700, fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
-              {movie.rating || '8.0'}
+              {movie.rating?.average?.toFixed(1) || movie.imdbRating || 'N/A'}
             </Typography>
           </Box>
         </Box>
 
         {/* Movie Info */}
-        <CardContent sx={{ flexGrow: 1, position: 'relative', zIndex: 2, p: { xs: 1.5, md: 2 } }}>
+        <CardContent sx={{ flexGrow: 1, position: 'relative', zIndex: 2, p: { xs: 1, md: 2 } }}>
           <Typography
             component={Link}
-            to={`/movie/${movie.id}`}
+            to={generateMovieUrl(movie)}
             variant="h6"
             sx={{
               color: 'rgba(255, 255, 255, 0.95)',
               textDecoration: 'none',
               fontWeight: 600,
-              mb: 1.5,
+              mb: { xs: 0.5, md: 1.5 },
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
               lineHeight: 1.4,
-              fontSize: { xs: '0.95rem', md: '1.1rem' },
+              fontSize: { xs: '0.8rem', md: '1.1rem' },
               letterSpacing: '-0.01em',
               '&:hover': {
                 color: theme.palette.primary.main,
@@ -230,7 +231,7 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
           </Typography>
 
           {/* Movie Details */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 0.75, md: 1 }, mb: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 0.5, md: 1 }, mb: { xs: 1, md: 2 } }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <CalendarIcon sx={{ fontSize: { xs: 14, md: 16 }, color: 'rgba(255, 255, 255, 0.6)' }} />
@@ -243,7 +244,7 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
                     letterSpacing: '0.02em',
                   }}
                 >
-                  {movie.year}
+                  {movie.releaseYear}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -280,7 +281,7 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
 
           {/* Genres */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-            {movie.genres?.slice(0, isMobile ? 2 : 3).map((genre, index) => (
+            {(Array.isArray(movie.genres) ? movie.genres : (typeof movie.genres === 'string' ? movie.genres.split(' ') : []))?.slice(0, isMobile ? 2 : 3).map((genre, index) => (
               <Chip
                 key={index}
                 label={genre}
@@ -317,7 +318,7 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
             <Tooltip title="View Details">
               <IconButton
                 component={Link}
-                to={`/movie/${movie.id}`}
+                to={generateMovieUrl(movie)}
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -337,7 +338,7 @@ const MovieCard = React.memo(({ movie, loading = false }) => {
             <Tooltip title="Download">
               <IconButton
                 component={Link}
-                to={`/download/${movie.id}`}
+                to={`/download/${generateMovieUrl(movie).split('/').pop()}`}
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',

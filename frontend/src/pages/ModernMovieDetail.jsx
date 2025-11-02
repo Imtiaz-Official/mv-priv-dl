@@ -37,6 +37,7 @@ import {
   Info as InfoIcon
 } from '@mui/icons-material';
 
+
 // Styled Components
 const HeroSection = styled(Box)(({ theme }) => ({
   position: 'relative',

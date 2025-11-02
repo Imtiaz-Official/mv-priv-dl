@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import Button from '../UI/Button';
+import { generateMovieUrl } from '../../utils/movieUtils';
 
 const CarouselContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -285,7 +286,7 @@ const FeaturedCarousel = ({ movies, title = "Featured Movies", icon }) => {
                       <ActionButtons>
                         <ActionButton
                           component={Link}
-                          to={`/movie/${movie.id}`}
+                          to={generateMovieUrl(movie)}
                           size="small"
                         >
                           <PlayIcon />

@@ -69,6 +69,8 @@ import LazyImage from '../components/UI/LazyImage';
 import MovieCard from '../components/UI/MovieCard';
 import WatchlistButton from '../components/UI/WatchlistButton';
 import { SectionLoader } from '../components/UI/LoadingSpinner';
+import { parseMovieParam, slugToTitle } from '../utils/movieUtils';
+
 
 const HeroSection = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -83,8 +85,20 @@ const HeroSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7))',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
     zIndex: 1,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7))',
+    zIndex: 2,
   },
   [theme.breakpoints.down('md')]: {
     minHeight: '50vh',
@@ -263,7 +277,7 @@ const PrimaryDownloadButton = styled(Button)(({ theme }) => ({
 }));
 
 const MovieDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [relatedMovies, setRelatedMovies] = useState([]);
@@ -276,28 +290,51 @@ const MovieDetail = () => {
 
   // Handle download button click
   const handleDownloadClick = () => {
-    navigate(`/download/${id}`);
+    navigate(`/download/${slug}`);
   };
 
-  // Scroll to top when component mounts or movie ID changes
+  // Scroll to top when component mounts or movie slug changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
         setLoading(true);
         
-        // Fetch movie details
-        const movieRes = await fetch(`http://localhost:5000/api/movies/${id}`);
+        // Parse the slug parameter to determine if it's an ID or slug
+        const { type, value } = parseMovieParam(slug);
+        let movieRes;
+        
+        if (type === 'id') {
+          // Fetch by ID (backward compatibility)
+          movieRes = await fetch(`http://localhost:5000/api/movies/${value}`);
+        } else {
+          // Fetch by slug/title - we'll need to search for the movie
+          const searchTitle = slugToTitle(value);
+          movieRes = await fetch(`http://localhost:5000/api/movies?q=${encodeURIComponent(searchTitle)}&limit=1`);
+        }
 
         let movieData = null; // Declare movieData in the correct scope
+        let movieInfo = null; // Declare movieInfo in the correct scope
 
         if (movieRes.ok) {
           movieData = await movieRes.json(); // Assign to the declared variable
           if (movieData.success) {
-            const movieInfo = movieData.data.movie; // Fix: Access movie from data.movie
+            
+            if (type === 'id') {
+              // Single movie response
+              movieInfo = movieData.data.movie;
+            } else {
+              // Search results - get the first movie
+              const movies = movieData.data.movies;
+              if (movies && movies.length > 0) {
+                movieInfo = movies[0];
+              } else {
+                throw new Error('Movie not found');
+              }
+            }
             setMovie({
               id: movieInfo._id,
               title: movieInfo.title,
@@ -365,8 +402,8 @@ const MovieDetail = () => {
         }
 
         // Fetch related movies only if not already set
-        if (!movieData?.data?.relatedMovies) {
-          const relatedRes = await fetch(`http://localhost:5000/api/movies/related/${id}`);
+        if (!movieData?.data?.relatedMovies && movieInfo) {
+          const relatedRes = await fetch(`http://localhost:5000/api/movies/related/${movieInfo._id}`);
           if (relatedRes.ok) {
             const relatedData = await relatedRes.json();
             if (relatedData.success) {
@@ -390,7 +427,7 @@ const MovieDetail = () => {
         if (!movieRes.ok) {
           // Fallback to mock data if API fails
           const mockMovie = {
-            id: parseInt(id),
+            id: 1,
             title: 'Avengers: Endgame',
             poster: '/placeholder-movie.svg',
             backdrop: '/placeholder-backdrop.svg',
@@ -420,6 +457,12 @@ const MovieDetail = () => {
               imdb: 8.4,
               rotten: 94,
               metacritic: 78,
+            },
+            userStats: {
+              likes: 1250,
+              dislikes: 45,
+              downloads: 2500000,
+              watchlistCount: 850000,
             },
           };
 
@@ -455,7 +498,7 @@ const MovieDetail = () => {
         console.error('Error fetching movie details:', error);
         // Fallback to mock data on error
         const mockMovie = {
-          id: parseInt(id),
+          id: 1,
           title: 'Avengers: Endgame',
           poster: '/placeholder-movie.svg',
           backdrop: '/placeholder-backdrop.svg',
@@ -521,7 +564,7 @@ const MovieDetail = () => {
     };
 
     fetchMovieDetails();
-  }, [id]);
+  }, [slug]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -567,11 +610,10 @@ const MovieDetail = () => {
           },
         }}
       >
-        <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 }, position: 'relative', zIndex: 3 }}>
           {/* Breadcrumb Navigation - Hidden on mobile for cleaner look */}
           <Box sx={{ 
             mb: { xs: 2, sm: 3 }, 
-            zIndex: 2, 
             position: 'relative',
             display: { xs: 'none', sm: 'block' }
           }}>
@@ -588,7 +630,7 @@ const MovieDetail = () => {
           </Box>
 
           {/* Mobile-First Layout */}
-          <Box sx={{ zIndex: 2, position: 'relative' }}>
+          <Box sx={{ position: 'relative' }}>
             {/* Mobile Layout (xs) */}
             <Box sx={{ display: { xs: 'block', md: 'none' } }}>
               {/* Mobile Header with Poster and Basic Info */}
@@ -1157,7 +1199,7 @@ const MovieDetail = () => {
                     variant="contained"
                     size="medium"
                     component={Link}
-                    to={`/download/${movie.id}`}
+                    to={`/download/${slug}`}
                     sx={{
                       background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
                       color: 'white',

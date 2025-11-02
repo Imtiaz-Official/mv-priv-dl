@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import Button from '../UI/Button';
+import { generateMovieUrl } from '../../utils/movieUtils';
 
 const TrendingContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -345,7 +346,7 @@ const TrendingSection = ({ movies, title = "Trending Now" }) => {
                       <ActionButtons>
                         <ActionButton
                           component={Link}
-                          to={`/movie/${movie.id}`}
+                          to={generateMovieUrl(movie)}
                           size="small"
                         >
                           <PlayIcon />

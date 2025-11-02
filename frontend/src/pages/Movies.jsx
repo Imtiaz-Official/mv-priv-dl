@@ -1,267 +1,264 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
-  Typography,
   Grid,
   Card,
+  CardMedia,
   CardContent,
+  Typography,
   Chip,
+  Rating,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Slider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  Button,
   Pagination,
-  Fade,
-  useTheme,
-  useMediaQuery,
   Drawer,
-  IconButton,
-  ToggleButton,
-  ToggleButtonGroup,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Avatar,
-  Rating,
   Divider,
-  Tabs,
-  Tab,
+  Fade,
+  useTheme,
+  useMediaQuery,
+  Paper,
+  Stack,
+  Skeleton,
 } from '@mui/material';
 import {
-  ExpandMore as ExpandMoreIcon,
+  Search as SearchIcon,
   FilterList as FilterIcon,
-  Close as CloseIcon,
-  Movie as MovieIcon,
-  Star as StarIcon,
-  CalendarToday as CalendarIcon,
-  Category as CategoryIcon,
   GridView as GridViewIcon,
   ViewList as ListViewIcon,
-  Schedule as ClockIcon,
-  Visibility as ViewIcon,
+  ExpandMore as ExpandMoreIcon,
+  Star as StarIcon,
+  PlayArrow as PlayIcon,
   Download as DownloadIcon,
-  Tv as TvIcon,
-  Animation as AnimeIcon,
+  Visibility as ViewIcon,
+  Movie as MovieIcon,
+  CalendarToday as CalendarIcon,
+  AccessTime as ClockIcon,
+  Clear as ClearIcon,
+  Tune as TuneIcon,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import MovieCard from '../components/UI/MovieCard';
-import SearchBar from '../components/UI/SearchBar';
-import Button from '../components/UI/Button';
-import { SectionLoader } from '../components/UI/LoadingSpinner';
 
-const FilterCard = styled(Card)(({ theme }) => ({
-  background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)',
+// Enhanced Styled Components
+const PageContainer = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)',
+  paddingTop: theme.spacing(3),
+  paddingBottom: theme.spacing(6),
+}));
+
+const HeaderSection = styled(Box)(({ theme }) => ({
+  background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  borderRadius: 20,
-  marginBottom: theme.spacing(2),
-  position: 'relative',
-  overflow: 'hidden',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.25)',
+  borderRadius: '20px',
+  border: '1px solid rgba(255,255,255,0.1)',
+  padding: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+}));
+
+const FilterSidebar = styled(Paper)(({ theme }) => ({
+  background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
+  backdropFilter: 'blur(20px)',
+  borderRadius: '20px',
+  border: '1px solid rgba(255,255,255,0.1)',
+  padding: theme.spacing(3),
+  height: 'fit-content',
+  position: 'sticky',
+  top: theme.spacing(12),
+  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+}));
+
+const SearchContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  marginBottom: theme.spacing(3),
+  flexWrap: 'wrap',
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.08)',
+      borderColor: 'rgba(255,255,255,0.2)',
+    },
+    '&.Mui-focused': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      borderColor: theme.palette.primary.main,
+      boxShadow: `0 0 0 2px ${theme.palette.primary.main}20`,
+    },
+    '& fieldset': {
+      border: 'none',
+    },
   },
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '1px',
-    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+  '& .MuiInputBase-input': {
+    color: 'white',
+    '&::placeholder': {
+      color: 'rgba(255,255,255,0.5)',
+    },
   },
 }));
 
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
-  background: 'transparent',
-  boxShadow: 'none',
-  border: 'none',
-  '&:before': {
-    display: 'none',
+const ViewToggleButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'active',
+})(({ theme, active }) => ({
+  backgroundColor: active ? theme.palette.primary.main : 'rgba(255,255,255,0.05)',
+  color: active ? 'white' : 'rgba(255,255,255,0.7)',
+  borderRadius: '12px',
+  padding: theme.spacing(1.5),
+  border: `1px solid ${active ? theme.palette.primary.main : 'rgba(255,255,255,0.1)'}`,
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    backgroundColor: active ? theme.palette.primary.dark : 'rgba(255,255,255,0.1)',
+    transform: 'translateY(-2px)',
   },
-  '& .MuiAccordionSummary-root': {
-    padding: theme.spacing(2),
-    minHeight: 'auto',
-    borderRadius: 16,
-    transition: 'all 0.2s ease',
+}));
+
+const FilterSection = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+}));
+
+const FilterTitle = styled(Typography)(({ theme }) => ({
+  color: 'white',
+  fontWeight: 600,
+  marginBottom: theme.spacing(2),
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+}));
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.1)',
     '&:hover': {
-      background: 'rgba(255, 255, 255, 0.05)',
+      backgroundColor: 'rgba(255,255,255,0.08)',
     },
-    '& .MuiAccordionSummary-content': {
-      margin: 0,
+    '&.Mui-focused': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      borderColor: theme.palette.primary.main,
     },
-    '& .MuiAccordionSummary-expandIconWrapper': {
-      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      '&.Mui-expanded': {
-        transform: 'rotate(180deg)',
-      },
+    '& fieldset': {
+      border: 'none',
     },
   },
-  '& .MuiAccordionDetails-root': {
-    padding: theme.spacing(0, 3, 3),
+  '& .MuiInputLabel-root': {
+    color: 'rgba(255,255,255,0.7)',
+    '&.Mui-focused': {
+      color: theme.palette.primary.main,
+    },
+  },
+  '& .MuiSelect-select': {
+    color: 'white',
+  },
+  '& .MuiSelect-icon': {
+    color: 'rgba(255,255,255,0.7)',
+  },
+}));
+
+const MoviesGrid = styled(Box)(({ theme }) => ({
+  background: 'rgba(255,255,255,0.02)',
+  borderRadius: '20px',
+  border: '1px solid rgba(255,255,255,0.05)',
+  padding: theme.spacing(3),
+  backdropFilter: 'blur(10px)',
+}));
+
+const LoadingContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(8),
+  gap: theme.spacing(2),
+}));
+
+const EmptyState = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(8),
+  textAlign: 'center',
+  gap: theme.spacing(2),
+}));
+
+const ActiveFiltersContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+}));
+
+const FilterChip = styled(Chip)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: 'white',
+  borderRadius: '8px',
+  '& .MuiChip-deleteIcon': {
+    color: 'rgba(255,255,255,0.8)',
+    '&:hover': {
+      color: 'white',
+    },
   },
 }));
 
 const Movies = () => {
-  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+
+  // State management
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const [viewMode, setViewMode] = useState('list'); // New state for view mode - default to list
-  const [contentType, setContentType] = useState('all'); // New state for content type
-  const [filters, setFilters] = useState({
-    genre: '',
-    year: [2000, 2024],
-    rating: [5, 10],
-    quality: '',
-    sortBy: 'popularity',
-  });
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [ratingRange, setRatingRange] = useState([0, 10]);
+  const [sortBy, setSortBy] = useState('title');
+  const [viewMode, setViewMode] = useState('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const moviesPerPage = 12;
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const genres = ['Action', 'Adventure', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance', 'Animation'];
-  const qualities = ['HD', '4K', 'CAM', 'TS'];
-  const sortOptions = [
-    { value: 'popularity', label: 'Popularity' },
-    { value: 'rating', label: 'Rating' },
-    { value: 'year', label: 'Year' },
-    { value: 'title', label: 'Title' },
-  ];
-
-  // Content type tabs
-  const contentTypes = [
-    { value: 'all', label: 'All Content', icon: <CategoryIcon /> },
-    { value: 'movies', label: 'Movies', icon: <MovieIcon /> },
-    { value: 'tv', label: 'TV Shows', icon: <TvIcon /> },
-    { value: 'anime', label: 'Anime', icon: <AnimeIcon /> },
-  ];
-
-  // Helper functions
-  const getPageTitle = () => {
-    switch (contentType) {
-      case 'movies':
-        return 'Discover Movies';
-      case 'tv':
-        return 'Discover TV Shows';
-      case 'anime':
-        return 'Discover Anime';
-      default:
-        return 'Discover Content';
-    }
-  };
-
-  const getPageSubtitle = () => {
-    switch (contentType) {
-      case 'movies':
-        return 'Explore our vast collection of movies from all genres and eras';
-      case 'tv':
-        return 'Binge-watch the best TV series and shows';
-      case 'anime':
-        return 'Dive into the world of anime and animated series';
-      default:
-        return 'Explore our vast collection of movies, TV shows, and anime';
-    }
-  };
-
-  // Handle URL search parameters from navbar and home page
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const searchFromUrl = searchParams.get('search');
-    const typeFromUrl = searchParams.get('type');
-    const genreFromUrl = searchParams.get('genre');
-    const qualityFromUrl = searchParams.get('quality');
-    
-    if (searchFromUrl) {
-      setSearchQuery(searchFromUrl);
-    }
-    if (typeFromUrl && ['movies', 'tv', 'anime'].includes(typeFromUrl)) {
-      setContentType(typeFromUrl);
-    }
-    if (genreFromUrl) {
-      setFilters(prev => ({ ...prev, genre: genreFromUrl.charAt(0).toUpperCase() + genreFromUrl.slice(1) }));
-    }
-    if (qualityFromUrl) {
-      // Map quality URL parameters to filter values
-      const qualityMap = {
-        '720p': 'HD',
-        '1080p': 'HD',
-        '4k': '4K',
-        'bluray': 'HD'
-      };
-      const mappedQuality = qualityMap[qualityFromUrl.toLowerCase()] || qualityFromUrl.toUpperCase();
-      setFilters(prev => ({ ...prev, quality: mappedQuality }));
-    }
-  }, [location.search]);
-
   // Fetch movies from API
   useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/movies?limit=50');
-        const data = await response.json();
-        
-        if (data.success) {
-          const moviesData = data.data.movies.map(movie => ({
-            id: movie._id,
-            title: movie.title,
-            poster: movie.poster || '/placeholder-movie.svg',
-            rating: movie.imdbRating || movie.rating?.average || 0,
-            year: movie.releaseYear,
-            duration: movie.duration,
-            views: movie.views || 0,
-            quality: (movie.quality && typeof movie.quality === 'string') ? movie.quality.split(' ')[0] : 'HD', // Take first quality from string
-            genres: typeof movie.genres === 'string' ? movie.genres.split(' ') : (movie.genres || []),
-            description: movie.description || movie.plot || '',
-          }));
-          setMovies(moviesData);
+        const response = await fetch(`http://localhost:5000/api/movies?limit=100`);
+        if (response.ok) {
+          const data = await response.json();
+          setMovies(data.data?.movies || data.movies || []);
         } else {
-          // Fallback to mock data if API fails
-          const mockMovies = Array.from({ length: 50 }, (_, index) => ({
-            id: index + 1,
-            title: `Movie ${index + 1}`,
-            poster: `/placeholder-movie.svg`,
-            rating: Math.round((Math.random() * 5 + 5) * 10) / 10, // 5.0 to 10.0 with 1 decimal
-            year: Math.floor(Math.random() * 25) + 2000, // 2000 to 2024
-            duration: Math.floor(Math.random() * 60) + 90,
-            views: Math.floor(Math.random() * 1000000) + 100000,
-            quality: qualities[Math.floor(Math.random() * qualities.length)],
-            genres: [genres[Math.floor(Math.random() * genres.length)]],
-            description: `This is the description for Movie ${index + 1}. It's an amazing film with great storyline and excellent performances.`,
-          }));
-          setMovies(mockMovies);
+          console.error('Failed to fetch movies:', response.statusText);
+          setMovies([]);
         }
       } catch (error) {
         console.error('Error fetching movies:', error);
-        // Fallback to mock data on error
-        const mockMovies = Array.from({ length: 50 }, (_, index) => ({
-          id: index + 1,
-          title: `Movie ${index + 1}`,
-          poster: `/placeholder-movie.svg`,
-          rating: Math.round((Math.random() * 5 + 5) * 10) / 10, // 5.0 to 10.0 with 1 decimal
-          year: Math.floor(Math.random() * 25) + 2000, // 2000 to 2024
-          duration: Math.floor(Math.random() * 60) + 90,
-          views: Math.floor(Math.random() * 1000000) + 100000,
-          quality: qualities[Math.floor(Math.random() * qualities.length)],
-          genres: [genres[Math.floor(Math.random() * genres.length)]],
-          description: `This is the description for Movie ${index + 1}. It's an amazing film with great storyline and excellent performances.`,
-        }));
-        setMovies(mockMovies);
+        setMovies([]);
       } finally {
         setLoading(false);
       }
@@ -270,911 +267,552 @@ const Movies = () => {
     fetchMovies();
   }, []);
 
-  // Fetch suggestions for autocomplete
-  const fetchSuggestions = async (query) => {
-    if (!query || query.trim().length < 2) {
-      setSuggestions([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/movies/suggestions?q=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setSuggestions(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      setSuggestions([]);
-    }
-  };
-
-  // Load recent searches from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('movieSearchHistory');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (error) {
-        console.error('Error loading search history:', error);
-      }
-    }
-  }, []);
-
-  // Save search to history
-  const saveSearchToHistory = (query) => {
-    if (!query || query.trim().length < 2) return;
+  // Filter and sort logic
+  const filteredMovies = movies.filter(movie => {
+    const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const movieGenres = Array.isArray(movie.genres) ? movie.genres : (typeof movie.genres === 'string' ? movie.genres.split(' ') : []);
+    const matchesGenre = !selectedGenre || movieGenres.includes(selectedGenre);
+    const matchesYear = !selectedYear || movie.releaseYear?.toString() === selectedYear;
+    // Fix rating filter to use the correct rating field
+    const movieRating = movie.rating?.average || movie.imdbRating || 0;
+    const matchesRating = movieRating >= ratingRange[0] && movieRating <= ratingRange[1];
     
-    const trimmedQuery = query.trim();
-    const newHistory = [trimmedQuery, ...recentSearches.filter(item => item !== trimmedQuery)].slice(0, 5);
-    setRecentSearches(newHistory);
-    localStorage.setItem('movieSearchHistory', JSON.stringify(newHistory));
-  };
+    return matchesSearch && matchesGenre && matchesYear && matchesRating;
+  });
 
-  // Filter and search logic with useMemo for better performance
-  const filteredMovies = useMemo(() => {
-    let filtered = movies.filter(movie => {
-      const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesGenre = !filters.genre || movie.genres.includes(filters.genre);
-      const matchesYear = movie.year >= filters.year[0] && movie.year <= filters.year[1];
-      const matchesRating = movie.rating >= filters.rating[0] && movie.rating <= filters.rating[1];
-      const matchesQuality = !filters.quality || movie.quality === filters.quality;
-      
-      // Content type filtering
-      let matchesContentType = true;
-      if (contentType !== 'all') {
-        if (contentType === 'movies') {
-          matchesContentType = !movie.genres.includes('Animation') && movie.duration > 60;
-        } else if (contentType === 'tv') {
-          matchesContentType = movie.duration <= 60 && !movie.genres.includes('Animation');
-        } else if (contentType === 'anime') {
-          matchesContentType = movie.genres.includes('Animation');
-        }
-      }
+  const sortedMovies = [...filteredMovies].sort((a, b) => {
+    switch (sortBy) {
+      case 'title':
+        return a.title.localeCompare(b.title);
+      case 'year':
+        return (b.releaseYear || 0) - (a.releaseYear || 0);
+      case 'rating':
+        return (b.rating?.average || b.imdbRating || 0) - (a.rating?.average || a.imdbRating || 0);
+      default:
+        return 0;
+    }
+  });
 
-      return matchesSearch && matchesGenre && matchesYear && matchesRating && matchesQuality && matchesContentType;
-    });
-
-    // Sort movies
-    filtered.sort((a, b) => {
-      switch (filters.sortBy) {
-        case 'rating':
-          return b.rating - a.rating;
-        case 'year':
-          return b.year - a.year;
-        case 'title':
-          return a.title.localeCompare(b.title);
-        default:
-          return b.views - a.views;
-      }
-    });
-
-    return filtered;
-  }, [movies, searchQuery, filters, contentType]);
-
-  // Update current page when filtered movies change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredMovies]);
-
-  const handleFilterChange = useCallback((filterType, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  }, []);
-
-  // Debounced filter change for sliders to improve performance
-  const handleSliderChange = useCallback((filterType, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  }, []);
-
-  const clearFilters = () => {
-    setFilters({
-      genre: '',
-      year: [2000, 2024],
-      rating: [5, 10],
-      quality: '',
-      sortBy: 'popularity',
-    });
-    setSearchQuery('');
-  };
-
-  const paginatedMovies = filteredMovies.slice(
+  // Pagination
+  const totalPages = Math.ceil(sortedMovies.length / moviesPerPage);
+  const paginatedMovies = sortedMovies.slice(
     (currentPage - 1) * moviesPerPage,
     currentPage * moviesPerPage
   );
 
-  const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
+  // Get active filters for display
+  const getActiveFilters = () => {
+    const filters = [];
+    if (searchQuery) filters.push({ type: 'search', value: searchQuery, label: `Search: ${searchQuery}` });
+    if (selectedGenre) filters.push({ type: 'genre', value: selectedGenre, label: `Genre: ${selectedGenre}` });
+    if (selectedYear) filters.push({ type: 'year', value: selectedYear, label: `Year: ${selectedYear}` });
+    if (ratingRange[0] > 0 || ratingRange[1] < 10) {
+      filters.push({ type: 'rating', value: ratingRange, label: `Rating: ${ratingRange[0]}-${ratingRange[1]}` });
+    }
+    return filters;
+  };
 
+  const clearFilter = (filterType, filterValue) => {
+    switch (filterType) {
+      case 'search':
+        setSearchQuery('');
+        break;
+      case 'genre':
+        setSelectedGenre('');
+        break;
+      case 'year':
+        setSelectedYear('');
+        break;
+      case 'rating':
+        setRatingRange([0, 10]);
+        break;
+    }
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedGenre('');
+    setSelectedYear('');
+    setRatingRange([0, 10]);
+    setCurrentPage(1);
+  };
+
+  // Filter content component
   const FilterContent = () => (
     <Box>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 3,
-        pb: 2,
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <Typography 
-          variant="h5" 
-          sx={{ 
-            color: 'white', 
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-0.02em'
-          }}
-        >
-          Filters
-        </Typography>
-        {isMobile && (
-          <IconButton 
-            onClick={() => setMobileFilterOpen(false)} 
-            sx={{ 
-              color: 'white',
-              background: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                background: 'rgba(255, 255, 255, 0.2)',
-              }
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        )}
-      </Box>
+      <FilterTitle variant="h6">
+        <TuneIcon />
+        Filters
+      </FilterTitle>
 
-      <FilterCard>
-        <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                p: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <CategoryIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
-              </Box>
-              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Genre</Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <FormControl fullWidth>
-              <InputLabel sx={{ 
-                color: 'rgba(255, 255, 255, 0.7)',
-                '&.Mui-focused': {
-                  color: '#667eea'
-                }
-              }}>Select Genre</InputLabel>
-              <Select
-                value={filters.genre}
-                onChange={(e) => handleFilterChange('genre', e.target.value)}
-                sx={{
+      {/* Active Filters */}
+      {getActiveFilters().length > 0 && (
+        <FilterSection>
+          <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
+            Active Filters
+          </Typography>
+          <ActiveFiltersContainer>
+            {getActiveFilters().map((filter, index) => (
+              <FilterChip
+                key={index}
+                label={filter.label}
+                onDelete={() => clearFilter(filter.type, filter.value)}
+                deleteIcon={<ClearIcon />}
+                size="small"
+              />
+            ))}
+            <Button
+              size="small"
+              onClick={clearAllFilters}
+              sx={{
+                color: 'rgba(255,255,255,0.7)',
+                textTransform: 'none',
+                fontSize: '0.75rem',
+                '&:hover': {
                   color: 'white',
-                  borderRadius: 2,
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderWidth: '1px',
-                  },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'rgba(255, 255, 255, 0.4)',
-                  },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#667eea',
-                    borderWidth: '2px',
-                  },
-                  '& .MuiSelect-icon': {
-                    color: '#667eea',
-                  },
-                }}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      background: 'rgba(30, 30, 30, 0.95)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: 2,
-                      '& .MuiMenuItem-root': {
-                        color: 'white',
-                        '&:hover': {
-                          background: 'rgba(102, 126, 234, 0.2)',
-                        },
-                        '&.Mui-selected': {
-                          background: 'rgba(102, 126, 234, 0.3)',
-                        },
-                      },
-                    },
-                  },
-                }}
-              >
-                <MenuItem value="">All Genres</MenuItem>
-                {genres.map(genre => (
-                  <MenuItem key={genre} value={genre}>{genre}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </AccordionDetails>
-        </StyledAccordion>
-      </FilterCard>
+                },
+              }}
+            >
+              Clear All
+            </Button>
+          </ActiveFiltersContainer>
+        </FilterSection>
+      )}
 
-      <FilterCard>
-        <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                p: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <CalendarIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
-              </Box>
-              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Release Year</Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: 2,
-              p: 2,
-              mb: 2,
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <Typography variant="body2" sx={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                mb: 2,
-                textAlign: 'center',
-                fontWeight: 500
-              }}>
-                {filters.year[0]} - {filters.year[1]}
-              </Typography>
-              <Slider
-                value={filters.year}
-                onChange={(e, value) => handleSliderChange('year', value)}
-                valueLabelDisplay="auto"
-                min={2000}
-                max={2024}
-                sx={{
-                  color: '#667eea',
-                  height: 6,
-                  '& .MuiSlider-thumb': {
-                    backgroundColor: '#667eea',
-                    border: '3px solid white',
-                    width: 20,
-                    height: 20,
-                    '&:hover': {
-                      boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
-                    },
-                  },
-                  '& .MuiSlider-track': {
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    border: 'none',
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                  '& .MuiSlider-valueLabel': {
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: 1,
-                  },
-                }}
-              />
-            </Box>
-          </AccordionDetails>
-        </StyledAccordion>
-      </FilterCard>
+      {/* Genre Filter */}
+      <FilterSection>
+        <FilterTitle variant="subtitle1">Genre</FilterTitle>
+        <StyledFormControl fullWidth size="small">
+          <InputLabel>Select Genre</InputLabel>
+          <Select
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
+            label="Select Genre"
+          >
+            <MenuItem value="">All Genres</MenuItem>
+            <MenuItem value="Action">Action</MenuItem>
+            <MenuItem value="Comedy">Comedy</MenuItem>
+            <MenuItem value="Drama">Drama</MenuItem>
+            <MenuItem value="Horror">Horror</MenuItem>
+            <MenuItem value="Sci-Fi">Sci-Fi</MenuItem>
+            <MenuItem value="Thriller">Thriller</MenuItem>
+          </Select>
+        </StyledFormControl>
+      </FilterSection>
 
-      <FilterCard>
-        <StyledAccordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                p: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <StarIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
-              </Box>
-              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Rating</Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: 2,
-              p: 2,
-              mb: 2,
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <Typography variant="body2" sx={{ 
-                color: 'rgba(255, 255, 255, 0.9)', 
-                mb: 2,
-                textAlign: 'center',
-                fontWeight: 500
-              }}>
-                {filters.rating[0]} - {filters.rating[1]} stars
-              </Typography>
-              <Slider
-                value={filters.rating}
-                onChange={(e, value) => handleSliderChange('rating', value)}
-                valueLabelDisplay="auto"
-                min={5}
-                max={10}
-                step={0.1}
-                sx={{
-                  color: '#667eea',
-                  height: 6,
-                  '& .MuiSlider-thumb': {
-                    backgroundColor: '#667eea',
-                    border: '3px solid white',
-                    width: 20,
-                    height: 20,
-                    '&:hover': {
-                      boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
-                    },
-                  },
-                  '& .MuiSlider-track': {
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    border: 'none',
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                  '& .MuiSlider-valueLabel': {
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: 1,
-                  },
-                }}
-              />
-            </Box>
-          </AccordionDetails>
-        </StyledAccordion>
-      </FilterCard>
+      {/* Year Filter */}
+      <FilterSection>
+        <FilterTitle variant="subtitle1">Release Year</FilterTitle>
+        <StyledFormControl fullWidth size="small">
+          <InputLabel>Select Year</InputLabel>
+          <Select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            label="Select Year"
+          >
+            <MenuItem value="">All Years</MenuItem>
+            {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map(year => (
+              <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+            ))}
+          </Select>
+        </StyledFormControl>
+      </FilterSection>
 
-      <FilterCard>
-        <StyledAccordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                p: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <MovieIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
-              </Box>
-              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Quality</Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-              <Chip
-                label="All"
-                onClick={() => handleFilterChange('quality', '')}
-                variant={filters.quality === '' ? 'filled' : 'outlined'}
-                sx={{
-                  color: filters.quality === '' ? 'white' : 'rgba(255, 255, 255, 0.8)',
-                  background: filters.quality === '' 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                    : 'rgba(255, 255, 255, 0.05)',
-                  borderColor: filters.quality === '' ? 'transparent' : 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: 3,
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  height: 36,
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                    background: filters.quality === '' 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                      : 'rgba(102, 126, 234, 0.2)',
-                    borderColor: '#667eea',
-                  },
-                }}
-              />
-              {qualities.map(quality => (
-                <Chip
-                  key={quality}
-                  label={quality}
-                  onClick={() => handleFilterChange('quality', quality)}
-                  variant={filters.quality === quality ? 'filled' : 'outlined'}
-                  sx={{
-                    color: filters.quality === quality ? 'white' : 'rgba(255, 255, 255, 0.8)',
-                    background: filters.quality === quality 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                      : 'rgba(255, 255, 255, 0.05)',
-                    borderColor: filters.quality === quality ? 'transparent' : 'rgba(255, 255, 255, 0.3)',
-                    borderRadius: 3,
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    height: 36,
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                      background: filters.quality === quality 
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                        : 'rgba(102, 126, 234, 0.2)',
-                      borderColor: '#667eea',
-                    },
-                  }}
-                />
-              ))}
-            </Box>
-          </AccordionDetails>
-        </StyledAccordion>
-      </FilterCard>
+      {/* Rating Filter */}
+      <FilterSection>
+        <FilterTitle variant="subtitle1">Rating Range</FilterTitle>
+        <Box sx={{ px: 1 }}>
+          <Slider
+            value={ratingRange}
+            onChange={(e, newValue) => setRatingRange(newValue)}
+            valueLabelDisplay="auto"
+            min={0}
+            max={10}
+            step={0.5}
+            sx={{
+              color: theme.palette.primary.main,
+              '& .MuiSlider-thumb': {
+                backgroundColor: theme.palette.primary.main,
+                border: '2px solid white',
+                '&:hover': {
+                  boxShadow: `0 0 0 8px ${theme.palette.primary.main}20`,
+                },
+              },
+              '& .MuiSlider-track': {
+                backgroundColor: theme.palette.primary.main,
+              },
+              '& .MuiSlider-rail': {
+                backgroundColor: 'rgba(255,255,255,0.2)',
+              },
+            }}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+              {ratingRange[0]}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+              {ratingRange[1]}
+            </Typography>
+          </Box>
+        </Box>
+      </FilterSection>
 
-      <Box sx={{ mt: 3 }}>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={clearFilters}
-          sx={{ 
-            mt: 2,
-            borderRadius: 3,
-            height: 48,
-            fontSize: '1rem',
-            fontWeight: 600,
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderColor: 'rgba(255, 255, 255, 0.3)',
-            color: 'white',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              background: 'rgba(255, 69, 58, 0.1)',
-              borderColor: '#ff453a',
-              color: '#ff453a',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(255, 69, 58, 0.2)',
-            }
-          }}
-        >
-          Clear All Filters
-        </Button>
-      </Box>
+      {/* Sort By */}
+      <FilterSection>
+        <FilterTitle variant="subtitle1">Sort By</FilterTitle>
+        <StyledFormControl fullWidth size="small">
+          <InputLabel>Sort Order</InputLabel>
+          <Select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            label="Sort Order"
+          >
+            <MenuItem value="title">Title (A-Z)</MenuItem>
+            <MenuItem value="year">Year (Newest)</MenuItem>
+            <MenuItem value="rating">Rating (Highest)</MenuItem>
+          </Select>
+        </StyledFormControl>
+      </FilterSection>
     </Box>
   );
 
-  if (loading) {
-    return <SectionLoader text="Loading movies..." />;
-  }
-
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)' }}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <PageContainer>
+      <Container maxWidth="xl">
         {/* Header Section */}
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
+        <HeaderSection>
           <Typography
-            variant="h2"
+            variant="h3"
             sx={{
               color: 'white',
               fontWeight: 700,
               mb: 2,
-              fontSize: { xs: '2rem', md: '3rem' },
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)',
+              backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.02em',
             }}
           >
-            <CategoryIcon sx={{ color: theme.palette.primary.main }} />
-            {getPageTitle()}
+            Discover Movies
           </Typography>
           <Typography
             variant="h6"
             sx={{
-              color: 'rgba(255, 255, 255, 0.8)',
+              color: 'rgba(255,255,255,0.8)',
               mb: 4,
-              fontSize: { xs: '1rem', md: '1.25rem' },
-              maxWidth: 600,
-              mx: 'auto',
+              fontWeight: 400,
             }}
           >
-            {getPageSubtitle()}
+            Explore our vast collection of movies across all genres
           </Typography>
 
-          {/* Content Type Tabs */}
-          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
-            <Tabs
-              value={contentType}
-              onChange={(e, newValue) => setContentType(newValue)}
-              sx={{
-                '& .MuiTabs-indicator': {
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  height: 3,
-                },
-                '& .MuiTab-root': {
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  minWidth: 120,
-                  '&.Mui-selected': {
-                    color: 'white',
-                  },
-                },
+          {/* Search and View Controls */}
+          <SearchContainer>
+            <StyledTextField
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'rgba(255,255,255,0.5)' }} />
+                  </InputAdornment>
+                ),
               }}
-            >
-              {contentTypes.map((type) => (
-                <Tab
-                  key={type.value}
-                  value={type.value}
-                  label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {type.icon}
-                      {type.label}
-                    </Box>
-                  }
-                />
-              ))}
-            </Tabs>
-          </Box>
+              sx={{ flexGrow: 1, minWidth: 300 }}
+            />
+            
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <ViewToggleButton
+                active={viewMode === 'grid'}
+                onClick={() => setViewMode('grid')}
+              >
+                <GridViewIcon />
+              </ViewToggleButton>
+              <ViewToggleButton
+                active={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+              >
+                <ListViewIcon />
+              </ViewToggleButton>
+            </Box>
 
-          {/* Search Bar */}
-           <SearchBar
-             value={searchQuery}
-             onChange={setSearchQuery}
-             placeholder={`Search ${contentType === 'all' ? 'content' : contentType}...`}
-             suggestions={suggestions}
-             recentSearches={recentSearches}
-             onSuggestionClick={(suggestion) => setSearchQuery(suggestion)}
-             onRecentSearchClick={(search) => setSearchQuery(search)}
-             trendingSearches={contentType === 'anime' ? ['Naruto', 'Attack on Titan', 'One Piece'] : 
-                              contentType === 'tv' ? ['Breaking Bad', 'Game of Thrones', 'Stranger Things'] :
-                              ['Action Movies', 'Comedy Films', 'Sci-Fi Adventures']}
-           />
-         </Box>
-
-         {/* Controls Section */}
-         <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center', flexWrap: 'wrap' }}>
-           {/* View Mode Toggle */}
-           <ToggleButtonGroup
-             value={viewMode}
-             exclusive
-             onChange={(e, newView) => newView && setViewMode(newView)}
-             sx={{
-               '& .MuiToggleButton-root': {
-                 color: 'rgba(255, 255, 255, 0.7)',
-                 borderColor: 'rgba(255, 255, 255, 0.2)',
-                 '&:hover': {
-                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                 },
-                 '&.Mui-selected': {
-                   backgroundColor: theme.palette.primary.main,
-                   color: 'white',
-                   '&:hover': {
-                     backgroundColor: theme.palette.primary.dark,
-                   },
-                 },
-               },
-             }}
-           >
-             <ToggleButton value="grid" aria-label="grid view">
-               <GridViewIcon />
-             </ToggleButton>
-             <ToggleButton value="list" aria-label="list view">
-               <ListViewIcon />
-             </ToggleButton>
-           </ToggleButtonGroup>
-           
-           <FormControl sx={{ minWidth: 150 }}>
-             <InputLabel sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Sort By</InputLabel>
-             <Select
-               value={filters.sortBy}
-               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-               sx={{
-                 color: 'white',
-                 '& .MuiOutlinedInput-notchedOutline': {
-                   borderColor: 'rgba(255, 255, 255, 0.2)',
-                 },
-                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                   borderColor: 'rgba(255, 255, 255, 0.4)',
-                 },
-                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                   borderColor: theme.palette.primary.main,
-                 },
-               }}
-             >
-               {sortOptions.map(option => (
-                 <MenuItem key={option.value} value={option.value}>
-                   {option.label}
-                 </MenuItem>
-               ))}
-             </Select>
-           </FormControl>
-           {isMobile && (
-             <Button
-               variant="outlined"
-               startIcon={<FilterIcon />}
-               onClick={() => setMobileFilterOpen(true)}
-             >
-               Filters
-             </Button>
-           )}
-
-           {/* Results Info */}
-           <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', ml: 'auto' }}>
-             Showing {filteredMovies.length} {contentType === 'all' ? 'items' : contentType}
-           </Typography>
-         </Box>
-
-        <Grid container spacing={3}>
-          {/* Filters Sidebar */}
-          {!isMobile && (
-            <Grid item md={3}>
-              <Box sx={{ position: 'sticky', top: 100 }}>
-                <FilterContent />
-              </Box>
-            </Grid>
-          )}
-
-          {/* Movies Grid */}
-          <Grid item xs={12} md={isMobile ? 12 : 9}>
-            {viewMode === 'grid' ? (
-              // Grid View - Enhanced with better spacing and responsiveness
-              <Grid 
-                container 
-                spacing={{ xs: 2, sm: 3, md: 4 }}
+            {/* Mobile Filter Button */}
+            {isMobile && (
+              <Button
+                variant="outlined"
+                startIcon={<FilterIcon />}
+                onClick={() => setMobileFilterOpen(true)}
                 sx={{
-                  '& .MuiGrid-item': {
-                    display: 'flex',
-                    flexDirection: 'column',
+                  borderColor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  '&:hover': {
+                    borderColor: 'rgba(255,255,255,0.4)',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
                   },
                 }}
               >
-                {paginatedMovies.map((movie, index) => (
-                  <Grid 
-                    item 
-                    xs={12} 
-                    sm={6} 
-                    md={4} 
-                    lg={3} 
-                    xl={2.4}
-                    key={movie.id}
+                Filters
+              </Button>
+            )}
+          </SearchContainer>
+
+          {/* Results Summary */}
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'rgba(255,255,255,0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <MovieIcon sx={{ fontSize: 16 }} />
+            {loading ? 'Loading...' : `${sortedMovies.length} movies found`}
+          </Typography>
+        </HeaderSection>
+
+        {/* Main Content */}
+        <Grid container spacing={4}>
+          {/* Filters Sidebar - Desktop only */}
+          {!isMobile && (
+            <Grid item lg={3}>
+              <FilterSidebar elevation={0}>
+                <FilterContent />
+              </FilterSidebar>
+            </Grid>
+          )}
+
+          {/* Movies Section */}
+          <Grid item xs={12} lg={isMobile ? 12 : 9}>
+            <MoviesGrid>
+              {loading ? (
+                <LoadingContainer>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    {[...Array(6)].map((_, index) => (
+                      <Skeleton
+                        key={index}
+                        variant="rectangular"
+                        width={200}
+                        height={300}
+                        sx={{
+                          backgroundColor: 'rgba(255,255,255,0.1)',
+                          borderRadius: 2,
+                        }}
+                      />
+                    ))}
+                  </Box>
+                  <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.7)', mt: 2 }}>
+                    Loading amazing movies...
+                  </Typography>
+                </LoadingContainer>
+              ) : sortedMovies.length === 0 ? (
+                <EmptyState>
+                  <MovieIcon sx={{ fontSize: 80, color: 'rgba(255,255,255,0.3)', mb: 2 }} />
+                  <Typography variant="h5" sx={{ color: 'white', mb: 1 }}>
+                    No movies found
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)', mb: 3 }}>
+                    Try adjusting your search criteria or filters
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    onClick={clearAllFilters}
                     sx={{
-                      minHeight: { xs: 400, sm: 450, md: 520 },
-                      display: 'flex',
+                      borderColor: theme.palette.primary.main,
+                      color: theme.palette.primary.main,
+                      '&:hover': {
+                        backgroundColor: `${theme.palette.primary.main}20`,
+                      },
                     }}
                   >
-                    <Fade in timeout={300 + index * 50}>
-                      <Box sx={{ height: '100%', display: 'flex' }}>
-                        <MovieCard movie={movie} />
-                      </Box>
-                    </Fade>
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              // List View
-              <List sx={{ width: '100%' }}>
-                {paginatedMovies.map((movie, index) => (
-                  <Fade in timeout={300 + index * 50} key={movie.id}>
-                    <Box>
-                      <ListItem
-                        sx={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          borderRadius: 2,
-                          mb: 2,
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                            transform: 'translateY(-2px)',
-                          },
-                        }}
-                        onClick={() => window.location.href = `/movie/${movie.id}`}
-                      >
-                        <ListItemAvatar>
-                          <Avatar
-                            src={movie.poster}
-                            variant="rounded"
+                    Clear All Filters
+                  </Button>
+                </EmptyState>
+              ) : (
+                <Box>
+                  {viewMode === 'grid' ? (
+                    <Box 
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                          xs: 'repeat(5, 1fr)', // 5 movies per row on mobile
+                          sm: 'repeat(3, 1fr)',  // 3 movies per row on small tablets
+                          md: 'repeat(4, 1fr)',  // 4 movies per row on medium screens
+                          lg: 'repeat(5, 1fr)'   // 5 movies per row on large screens
+                        },
+                        gap: { xs: 1, sm: 2, md: 3 }
+                      }}
+                    >
+                      {paginatedMovies.map((movie, index) => (
+                        <Fade in timeout={300 + index * 100} key={movie._id || index}>
+                          <Box>
+                            <MovieCard movie={movie} />
+                          </Box>
+                        </Fade>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Stack spacing={2}>
+                      {paginatedMovies.map((movie, index) => (
+                        <Fade in timeout={300 + index * 50} key={movie._id || index}>
+                          <Card
                             sx={{
-                              width: 80,
-                              height: 120,
-                              mr: 2,
-                              border: '2px solid rgba(255, 255, 255, 0.1)',
+                              backgroundColor: 'rgba(255,255,255,0.05)',
+                              borderRadius: 3,
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              transition: 'all 0.3s ease',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                backgroundColor: 'rgba(255,255,255,0.08)',
+                                transform: 'translateY(-4px)',
+                                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                              },
                             }}
+                            onClick={() => navigate(`/movie/${movie.id}`)}
                           >
-                            <MovieIcon />
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primaryTypographyProps={{ component: 'div' }}
-                          secondaryTypographyProps={{ component: 'div' }}
-                          primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                              <Typography
-                                variant="h6"
+                            <Box sx={{ display: 'flex', p: 2 }}>
+                              <CardMedia
+                                component="img"
                                 sx={{
-                                  color: 'white',
-                                  fontWeight: 'bold',
-                                  fontSize: { xs: '1rem', md: '1.25rem' },
+                                  width: 120,
+                                  height: 180,
+                                  borderRadius: 2,
+                                  objectFit: 'cover',
                                 }}
-                              >
-                                {movie.title}
-                              </Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Rating
-                                  value={movie.rating / 2}
-                                  precision={0.1}
-                                  size="small"
-                                  readOnly
+                                image={movie.poster}
+                                alt={movie.title}
+                              />
+                              <CardContent sx={{ flex: 1, pl: 3 }}>
+                                <Typography
+                                  variant="h5"
                                   sx={{
-                                    '& .MuiRating-iconFilled': {
-                                      color: '#ffd700',
-                                    },
+                                    color: 'white',
+                                    fontWeight: 600,
+                                    mb: 1,
                                   }}
-                                />
+                                >
+                                  {movie.title}
+                                </Typography>
                                 <Typography
                                   variant="body2"
-                                  sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                                  sx={{
+                                    color: 'rgba(255,255,255,0.7)',
+                                    mb: 2,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                  }}
                                 >
-                                  {movie.rating}/10
+                                  {movie.plot}
                                 </Typography>
-                              </Box>
-                            </Box>
-                          }
-                          secondary={
-                            <Box>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, flexWrap: 'wrap' }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                  <CalendarIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.5)' }} />
-                                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                    {movie.year}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <StarIcon sx={{ fontSize: 18, color: '#ffd700' }} />
+                                    <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                                      {movie.imdbRating || 'N/A'}/10
+                                    </Typography>
+                                  </Box>
+                                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+                                    {movie.releaseYear}
                                   </Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                  <ClockIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.5)' }} />
-                                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                                    {movie.duration}
-                                  </Typography>
+                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {(Array.isArray(movie.genres) ? movie.genres : (typeof movie.genres === 'string' ? movie.genres.split(' ') : []))?.slice(0, 3).map((genre) => (
+                    <Chip
+                      key={genre}
+                      label={genre}
+                      size="small"
+                      sx={{
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.8)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        fontSize: '0.75rem',
+                                      }}
+                                    />
+                                  ))}
                                 </Box>
-                                {movie.quality && (
-                                  <Chip
-                                    label={movie.quality}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: theme.palette.primary.main,
-                                      color: 'white',
-                                      fontSize: '0.75rem',
-                                    }}
-                                  />
-                                )}
-                              </Box>
-                              <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                                {movie.genres?.slice(0, 3).map((genre) => (
-                                  <Chip
-                                    key={genre}
-                                    label={genre}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      color: 'rgba(255, 255, 255, 0.8)',
-                                      borderColor: 'rgba(255, 255, 255, 0.3)',
-                                      fontSize: '0.7rem',
-                                    }}
-                                  />
-                                ))}
-                              </Box>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  color: 'rgba(255, 255, 255, 0.6)',
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                  lineHeight: 1.4,
-                                }}
-                              >
-                                {movie.plot || 'No description available.'}
-                              </Typography>
+                              </CardContent>
                             </Box>
-                          }
-                        />
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, ml: 2 }}>
-                          <IconButton
-                            sx={{
-                              color: 'rgba(255, 255, 255, 0.7)',
-                              '&:hover': {
-                                color: theme.palette.primary.main,
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                              },
-                            }}
-                          >
-                            <ViewIcon />
-                          </IconButton>
-                          <IconButton
-                            sx={{
-                              color: 'rgba(255, 255, 255, 0.7)',
-                              '&:hover': {
-                                color: theme.palette.secondary.main,
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                              },
-                            }}
-                          >
-                            <DownloadIcon />
-                          </IconButton>
-                        </Box>
-                      </ListItem>
-                      {index < paginatedMovies.length - 1 && (
-                        <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', my: 1 }} />
-                      )}
-                    </Box>
-                  </Fade>
-                ))}
-              </List>
-            )}
+                          </Card>
+                        </Fade>
+                      ))}
+                    </Stack>
+                  )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={(e, page) => {
-                    setCurrentPage(page);
-                    // Scroll to top when page changes
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  color="primary"
-                  size="large"
-                  sx={{
-                    '& .MuiPaginationItem-root': {
-                      color: 'white',
-                      borderColor: 'rgba(255, 255, 255, 0.2)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: theme.palette.primary.main,
-                        color: 'white',
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            )}
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+                      <Pagination
+                        count={totalPages}
+                        page={currentPage}
+                        onChange={(e, page) => {
+                          setCurrentPage(page);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        color="primary"
+                        size="large"
+                        sx={{
+                          '& .MuiPaginationItem-root': {
+                            color: 'white',
+                            borderColor: 'rgba(255,255,255,0.2)',
+                            backgroundColor: 'rgba(255,255,255,0.05)',
+                            '&:hover': {
+                              backgroundColor: 'rgba(255,255,255,0.1)',
+                            },
+                            '&.Mui-selected': {
+                              backgroundColor: theme.palette.primary.main,
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: theme.palette.primary.dark,
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              )}
+            </MoviesGrid>
           </Grid>
         </Grid>
 
         {/* Mobile Filter Drawer */}
         <Drawer
-          anchor="right"
+          anchor="bottom"
           open={mobileFilterOpen}
           onClose={() => setMobileFilterOpen(false)}
-          PaperProps={{
-            sx: {
-              width: 320,
-              background: 'rgba(30, 30, 30, 0.95)',
+          sx={{
+            '& .MuiDrawer-paper': {
+              background: 'linear-gradient(135deg, rgba(26,26,46,0.95) 0%, rgba(22,33,62,0.95) 100%)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              maxHeight: '80vh',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              border: '1px solid rgba(255,255,255,0.1)',
             },
           }}
         >
           <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                Filters
+              </Typography>
+              <IconButton
+                onClick={() => setMobileFilterOpen(false)}
+                sx={{ color: 'rgba(255,255,255,0.7)' }}
+              >
+                <ClearIcon />
+              </IconButton>
+            </Box>
             <FilterContent />
           </Box>
         </Drawer>
       </Container>
-    </Box>
+    </PageContainer>
   );
 };
 

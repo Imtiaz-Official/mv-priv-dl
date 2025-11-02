@@ -225,7 +225,7 @@ const MovieManagement = () => {
             duration: '152 min',
             language: 'English',
             country: 'USA',
-            poster: 'https://via.placeholder.com/300x450/1a1a1a/ffffff?text=The+Dark+Knight',
+            poster: null, // Will use fallback image
             trailer: 'https://www.youtube.com/watch?v=EXeTwQWrcwY',
             rating: { average: 9.0, count: 2500000 },
             imdbRating: 9.0,
@@ -246,7 +246,7 @@ const MovieManagement = () => {
             duration: '148 min',
             language: 'English',
             country: 'USA',
-            poster: 'https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Inception',
+            poster: null, // Will use fallback image
             trailer: 'https://www.youtube.com/watch?v=YoHD9XEInc0',
             rating: { average: 8.8, count: 2200000 },
             imdbRating: 8.8,
@@ -267,7 +267,7 @@ const MovieManagement = () => {
             duration: '132 min',
             language: 'Korean',
             country: 'South Korea',
-            poster: 'https://via.placeholder.com/300x450/1a1a1a/ffffff?text=Parasite',
+            poster: null, // Will use fallback image
             trailer: 'https://www.youtube.com/watch?v=5xH0HfJHsaY',
             rating: { average: 8.6, count: 750000 },
             imdbRating: 8.6,
@@ -732,7 +732,7 @@ const MovieManagement = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box
                       component="img"
-                      src={movie.poster || 'https://via.placeholder.com/60x90/1a1a1a/ffffff?text=No+Image'}
+                      src={movie.poster || '/api/placeholder/60/90'}
                       alt={movie.title}
                       sx={{
                         width: 40,
